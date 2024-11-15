@@ -1,0 +1,3 @@
+tileset.png is a remix of the GameBoy tileset "Background Assets" by Gumpy Function
+obtained from: https://gumpyfunction.itch.io/game-boy-rpg-fantasy-tileset-free
+License: custom, restrictive (check description on webpage)

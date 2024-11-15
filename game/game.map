@@ -1,0 +1,105 @@
+SUMMARY:
+	ROM0: 11176 bytes used / 21592 free
+
+ROM0 bank #0:
+	SECTION: $0000-$0012 ($0013 bytes) ["main"]
+	         $0000 = main
+	         $0000 = main.wait_vblank_u1
+	         $000e = main.loop
+	EMPTY: $0013-$003f ($002d bytes)
+	SECTION: $0040-$00a3 ($0064 bytes) ["vblank_interrupt"]
+	         $0041 = STRING_YOU_MADE
+	         $004a = STRING_PIZZAS
+	         $0051 = STRING_GAME_OVER
+	         $005e = TimerEnd
+	         $006f = TimerEnd.load_start_tilemap
+	SECTION: $00a4-$00f2 ($004f bytes) ["timer"]
+	         $00a4 = UpdateTimerDisplay
+	         $00bc = CalculateTotalPizzas
+	         $00d3 = CalculateHundreds
+	         $00d5 = CalculateHundreds.tens_loop
+	         $00de = CalculateHundreds.done_hundreds
+	         $00e3 = CalculateTens
+	         $00e5 = CalculateTens.tens_loop
+	         $00ee = CalculateTens.done_tens
+	EMPTY: $00f3-$00ff ($000d bytes)
+	SECTION: $0100-$014f ($0050 bytes) ["header"]
+	         $0100 = entrypoint
+	SECTION: $0150-$07e1 ($0692 bytes) ["game"]
+	         $0150 = InitSample
+	         $0156 = InitSample.load_data_u1
+	         $016d = InitSample.init_round_1
+	         $0178 = InitSample.init_round_2
+	         $0183 = InitSample.over
+	         $01a2 = InitSample.init_oam_u2
+	         $02ef = InitSample.temp_pepperoni
+	         $0302 = InitSample.temp_no_pepperoni
+	         $030c = InitSample.temp_mushroom
+	         $031f = InitSample.temp_no_mushroom
+	         $0329 = InitSample.temp_onion
+	         $033c = InitSample.temp_no_onion
+	         $0346 = InitSample.temp_sardine
+	         $0359 = InitSample.temp_no_sardine
+	         $0363 = InitSample.temp_done
+	         $0364 = UpdateSample
+	         $03cd = UpdateSample.load_bg_tilemap
+	         $03e0 = UpdateSample.nothing
+	         $03e3 = UpdateSample.game
+	         $042a = UpdateSample.move_down
+	         $0439 = UpdateSample.move_up
+	         $0448 = UpdateSample.move_left
+	         $0457 = UpdateSample.move_right
+	         $0466 = UpdateSample.move_none
+	         $0490 = UpdateSample.no_fireplace
+	         $04ba = UpdateSample.check_rm_pepperoni
+	         $04ca = UpdateSample.no_pepperoni
+	         $04f4 = UpdateSample.check_rm_mushroom
+	         $0504 = UpdateSample.no_mushroom
+	         $052e = UpdateSample.check_rm_onion
+	         $053e = UpdateSample.no_onion
+	         $0568 = UpdateSample.check_rm_sardine
+	         $0578 = UpdateSample.no_sardine
+	         $0578 = UpdateSample.fireplace
+	         $05b3 = UpdateSample.rm_fireplace
+	         $05e3 = UpdateSample.pepperoni
+	         $05f8 = UpdateSample.rm_pepperoni
+	         $0602 = UpdateSample.mushroom
+	         $0617 = UpdateSample.rm_mushroom
+	         $0621 = UpdateSample.onion
+	         $0636 = UpdateSample.rm_onion
+	         $0640 = UpdateSample.sardine
+	         $0655 = UpdateSample.rm_sardine
+	         $065f = UpdateSample.done
+	         $0678 = UpdateSample.loop_exit_sprite
+	         $069f = UpdateSample.skip_reset
+	         $06b3 = UpdateSample.loop_enter_sprite
+	         $06cd = UpdateSample.temp_pepperoni
+	         $06e0 = UpdateSample.temp_no_pepperoni
+	         $06ea = UpdateSample.temp_mushroom
+	         $06fd = UpdateSample.temp_no_mushroom
+	         $0707 = UpdateSample.temp_onion
+	         $071a = UpdateSample.temp_no_onion
+	         $0724 = UpdateSample.temp_sardine
+	         $0737 = UpdateSample.temp_no_sardine
+	         $0741 = UpdateSample.continue
+	         $0741 = UpdateSample.temp_done
+	         $0762 = UpdateSample.handle_timer_end
+	         $0776 = UpdateSample.init_round_1
+	         $0781 = UpdateSample.init_round_2
+	         $078c = UpdateSample.skip_decrement
+	         $078c = UpdateSample.over
+	         $078d = UpdateSample.end
+	         $078e = print_text
+	         $078e = print_text.print_loop
+	         $079e = print_text.non_letter
+	         $07c1 = print_text.space
+	         $07c6 = print_text.exclamation
+	         $07cb = print_text.comma
+	         $07d0 = print_text.dash
+	         $07d5 = print_text.period
+	         $07da = print_text.question
+	         $07dc = print_text.update_bc
+	         $07e1 = print_text.done
+	EMPTY: $07e2-$5bff ($541e bytes)
+	SECTION: $5c00-$7fff ($2400 bytes) ["graphics_data"]
+	TOTAL EMPTY: $5458 bytes
