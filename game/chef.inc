@@ -72,7 +72,6 @@ def SARDINE_TILE_ADRESS      equ (40)
 
 
 macro InitChefSprites
-
     rsset _OAMRAM
     def CHEF_SPRITE_ADDRESS         rl 1
     def PEPPERONI_SPRITE_ADDRESS    rl 1
@@ -116,7 +115,6 @@ macro UpdateChef
 endm
 
 macro MoveChef
-
     .move_down
     ld a, [JOYPAD_CURRENT_ADDRESS]
     bit PADB_DOWN, a
@@ -222,7 +220,6 @@ macro CheckPepperoni
         res PEPPERONI_BIT, a
         ld [CURRENT_ORDER_INFO], a
 
-
     .no_pepperoni
 endm
 
@@ -249,6 +246,13 @@ macro CheckMushroom
     set MUSHROOM_BIT, a
     ld [CURRENT_ORDER_INFO], a
 
+    ; if topping not needed, play the invalid sound
+     ld a, [CURRENT_ORDER_INFO]
+     bit MUSHROOM_BIT, a
+     jp nz, .check_rm_mushroom
+ 
+     InvalidToppingSound
+
     .check_rm_mushroom
         ld a, [JOYPAD_PRESSED_ADDRESS]
         bit PADB_B, a
@@ -257,7 +261,6 @@ macro CheckMushroom
         ld a, [CURRENT_ORDER_INFO]
         res MUSHROOM_BIT, a
         ld [CURRENT_ORDER_INFO], a
-
 
     .no_mushroom
 endm
@@ -284,6 +287,13 @@ macro CheckOnion
     ld a, [CURRENT_ORDER_INFO]
     set ONION_BIT, a
     ld [CURRENT_ORDER_INFO], a
+
+    ; if topping not needed, play the invalid sound
+    ld a, [CURRENT_ORDER_INFO]
+    bit ONION_BIT, a
+    jp nz, .check_rm_onion
+
+    InvalidToppingSound
 
     .check_rm_onion
         ld a, [JOYPAD_PRESSED_ADDRESS]
@@ -319,6 +329,13 @@ macro CheckSardine
     ld a, [CURRENT_ORDER_INFO]
     set SARDINE_BIT, a
     ld [CURRENT_ORDER_INFO], a
+
+    ; if topping not needed, play the invalid sound
+    ld a, [CURRENT_ORDER_INFO]
+    bit SARDINE_BIT, a
+    jp nz, .check_rm_sardine
+
+    InvalidToppingSound
 
     .check_rm_sardine
         ld a, [JOYPAD_PRESSED_ADDRESS]
@@ -382,7 +399,6 @@ macro UpdatePizza
 endm
 
 macro AddFireplace
-
     ld a, PIZZA_TILE_LINE_1
     ld hl, PIZZA_LINE_1
     ld [hl], a
@@ -472,6 +488,14 @@ macro AddPepperoni
     ld [PEPPERONI_SPRITE_ADDRESS + OAMA_X], a
     ld a, PIZZA_LEFT_Y_POS
     ld [PEPPERONI_SPRITE_ADDRESS + OAMA_Y], a
+
+    ; if topping not needed, play the invalid sound
+    ld a, [CURRENT_ORDER_INFO]
+    bit PEPPERONI_BIT, a
+    jp z, .valid_pepperoni
+
+    PlayCoinSound
+    .valid_pepperoni
 endm
 
 macro AddMushroom

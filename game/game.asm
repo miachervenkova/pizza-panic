@@ -6,6 +6,7 @@
 include "utils.inc"
 include "chef.inc"
 include "customers.inc"
+include "audio.inc"
 include "joypad.inc"
 include "timer_functions.asm"
 
@@ -45,6 +46,14 @@ def TILEMAP_VRAM_END_LOCATION       equ ($9BFF)
 
 ; Game state storage in HRAM
 def START_SCREEN_STATE              equ ($FF80)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+rsset _RAM
+
+def WRAM_FRAME_COUNTER              rb 1
+
+def WRAM_END                        rb 0
 
 ; Distance between ascii values and tileset index
 def ALPHABET_OFFSET                 equ ($25)
@@ -259,7 +268,15 @@ TimerEnd:
 
 section "game", rom0
 
-InitSample:
+InitSample:    
+    ; init the WRAM state
+    copy [WRAM_FRAME_COUNTER], $FF
+
+    ; init the sound
+    copy [rNR52], AUDENA_ON
+    copy [rNR50], $77
+    copy [rNR51], $FF
+
     LoadGraphicsDataIntoVRAM
 
     ld a, 1          
