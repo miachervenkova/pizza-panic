@@ -1,3 +1,8 @@
+; Project 6
+; @file sprite_action.asm
+; @author Mia Chervenkova and Charlie Beard
+; @date Nov 17 2024
+
 ; move sprite and alternate tile indices
 update_sprite:
     ; timer for smooth motion

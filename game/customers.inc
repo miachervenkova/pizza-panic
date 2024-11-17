@@ -1,3 +1,8 @@
+; Project 6
+; @file customers.inc
+; @author Mia Chervenkova and Charlie Beard
+; @date Nov 17 2024
+
 if !def(CUSTOMERS_INC)
 def CUSTOMERS_RGBINC equ 1
 

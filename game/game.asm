@@ -1,7 +1,7 @@
-; Project 5
+; Project 6
 ; @file game.asm
 ; @author Mia Chervenkova and Charlie Beard
-; @date Nov 6 2024
+; @date Nov 17 2024
 
 include "utils.inc"
 include "chef.inc"

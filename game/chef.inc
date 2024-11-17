@@ -1,3 +1,8 @@
+; Project 6
+; @file chef.inc
+; @author Mia Chervenkova and Charlie Beard
+; @date Nov 17 2024
+
 if !def(CHEF_INC)
 def CHEF_RGBINC equ 1
 
@@ -116,31 +121,31 @@ endm
 
 macro MoveChef
     .move_down
-    ld a, [JOYPAD_CURRENT_ADDRESS]
-    bit PADB_DOWN, a
-    jp z, .move_up
+        ld a, [JOYPAD_CURRENT_ADDRESS]
+        bit PADB_DOWN, a
+        jp z, .move_up
 
-    ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
-    inc a
-    ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
+        ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
+        inc a
+        ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
 
     .move_up
-    ld a, [JOYPAD_CURRENT_ADDRESS]
-    bit PADB_UP, a
-    jp z, .move_left
+        ld a, [JOYPAD_CURRENT_ADDRESS]
+        bit PADB_UP, a
+        jp z, .move_left
 
-    ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
-    dec a
-    ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
+        ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
+        dec a
+        ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
 
     .move_left
-    ld a, [JOYPAD_CURRENT_ADDRESS]
-    bit PADB_LEFT, a
-    jp z, .move_right
+        ld a, [JOYPAD_CURRENT_ADDRESS]
+        bit PADB_LEFT, a
+        jp z, .move_right
 
-    ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
-    dec a
-    ld [CHEF_SPRITE_ADDRESS + OAMA_X], a
+        ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
+        dec a
+        ld [CHEF_SPRITE_ADDRESS + OAMA_X], a
 
     .move_right
     ld a, [JOYPAD_CURRENT_ADDRESS]
@@ -246,13 +251,6 @@ macro CheckMushroom
     set MUSHROOM_BIT, a
     ld [CURRENT_ORDER_INFO], a
 
-    ; if topping not needed, play the invalid sound
-     ld a, [CURRENT_ORDER_INFO]
-     bit MUSHROOM_BIT, a
-     jp nz, .check_rm_mushroom
- 
-     InvalidToppingSound
-
     .check_rm_mushroom
         ld a, [JOYPAD_PRESSED_ADDRESS]
         bit PADB_B, a
@@ -288,13 +286,6 @@ macro CheckOnion
     set ONION_BIT, a
     ld [CURRENT_ORDER_INFO], a
 
-    ; if topping not needed, play the invalid sound
-    ld a, [CURRENT_ORDER_INFO]
-    bit ONION_BIT, a
-    jp nz, .check_rm_onion
-
-    InvalidToppingSound
-
     .check_rm_onion
         ld a, [JOYPAD_PRESSED_ADDRESS]
         bit PADB_B, a
@@ -329,13 +320,6 @@ macro CheckSardine
     ld a, [CURRENT_ORDER_INFO]
     set SARDINE_BIT, a
     ld [CURRENT_ORDER_INFO], a
-
-    ; if topping not needed, play the invalid sound
-    ld a, [CURRENT_ORDER_INFO]
-    bit SARDINE_BIT, a
-    jp nz, .check_rm_sardine
-
-    InvalidToppingSound
 
     .check_rm_sardine
         ld a, [JOYPAD_PRESSED_ADDRESS]
@@ -492,9 +476,8 @@ macro AddPepperoni
     ; if topping not needed, play the invalid sound
     ld a, [CURRENT_ORDER_INFO]
     bit PEPPERONI_BIT, a
-    jp z, .valid_pepperoni
+    jp nz, .valid_pepperoni
 
-    PlayCoinSound
     .valid_pepperoni
 endm
 
