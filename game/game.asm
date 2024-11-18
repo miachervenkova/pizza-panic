@@ -268,7 +268,7 @@ TimerEnd:
 
 section "game", rom0
 
-InitSample:    
+InitGame:    
     ; init the WRAM state
     copy [WRAM_FRAME_COUNTER], $FF
 
@@ -322,7 +322,7 @@ InitSample:
     
     ret
 
-UpdateSample:
+UpdateOnVblank:
     halt
 
     ; if start screen -> state = 1
@@ -438,7 +438,7 @@ print_text:
     .done
         ret
 
-export InitSample, UpdateSample
+export InitGame, UpdateOnVblank
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

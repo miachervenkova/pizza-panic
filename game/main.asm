@@ -31,8 +31,8 @@ section "main", rom0
 main:
     DisableLCD
     
-    call InitSample
+    call InitGame
 
     .loop
-        call UpdateSample
+        call UpdateOnVblank
         jr .loop
