@@ -8,6 +8,7 @@ include "chef.inc"
 include "customers.inc"
 include "joypad.inc"
 include "timer_functions.asm"
+include "collision.inc"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -320,6 +321,7 @@ UpdateSample:
         UpdateJoypad
         UpdateChef
         UpdateGameState
+        UpdateCollisionStatus
 
         ld a, [FRAME_COUNTER]
         dec a

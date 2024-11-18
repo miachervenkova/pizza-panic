@@ -33,10 +33,10 @@ def SARDINE_WIDTH       equ (24)
 def SARDINE_HEIGHT      equ (8)
 
 ; locations to move topping sprites on pizza
-def PIZZA_LEFT_X_POS    equ (96)
+def PIZZA_LEFT_X_POS    equ (80)
 def PIZZA_LEFT_Y_POS    equ (136)
 
-def PIZZA_RIGHT_X_POS   equ (104)
+def PIZZA_RIGHT_X_POS   equ (88)
 def PIZZA_RIGHT_Y_POS   equ (136)
 
 ; locations for sauce moving
@@ -47,10 +47,10 @@ def PIZZA_TILE_LINE_4  equ ($41)
 
 def PIZZA_TILE_OFFSET   equ ($4)
 
-def PIZZA_LINE_1        equ ($9C0B)
-def PIZZA_LINE_2        equ ($9C2A)
-def PIZZA_LINE_3        equ ($9C4A)
-def PIZZA_LINE_4        equ ($9C6B)
+def PIZZA_LINE_1        equ ($9C09)
+def PIZZA_LINE_2        equ ($9C28)
+def PIZZA_LINE_3        equ ($9C48)
+def PIZZA_LINE_4        equ ($9C69)
 
 ; number of sprites used by the chef
 def NUM_CHEF_SPRITES    equ (5)
@@ -116,6 +116,11 @@ macro UpdateChef
 endm
 
 macro MoveChef
+
+    ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
+    ld [CHEF_PREV_X], a
+    ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
+    ld [CHEF_PREV_Y], a
 
     .move_down
     ld a, [JOYPAD_CURRENT_ADDRESS]
