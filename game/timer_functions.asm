@@ -1,3 +1,8 @@
+; Project 6
+; @file timer_functions.asm
+; @author Mia Chervenkova and Charlie Beard
+; @date Nov 17 2024
+
 section "timer", rom0
 
 ; updates timer tiles on display

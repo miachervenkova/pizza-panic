@@ -1,3 +1,8 @@
+; Project 6
+; @file customers.inc
+; @author Mia Chervenkova and Charlie Beard
+; @date Nov 17 2024
+
 if !def(CUSTOMERS_INC)
 def CUSTOMERS_RGBINC equ 1
 
@@ -126,7 +131,6 @@ macro InitGameOrders
 endm
 
 macro InitCustomerSprites
-
     rsset (_OAMRAM + (NUM_CHEF_SPRITES * sizeof_OAM_ATTRS))
     def CUSTOMER_SPRITE_ADDRESS             rl 1
     def CUSTOMER_PEPPERONI_SPRITE_ADDRESS   rl 1
@@ -177,7 +181,6 @@ macro SendCustomer
         copy [CUSTOMER_SPRITE_ADDRESS + OAMA_X], a
         cp a, b
         jp nz, .loop_enter_sprite
-
 endm
 
 macro DepartCustomer
@@ -263,6 +266,7 @@ macro CheckOrderDone
     cp a, d
     jp nz, .continue
 
+    PlayCoinSound
     DepartCustomer
     StartNextOrder
 

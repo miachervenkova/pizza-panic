@@ -1,3 +1,8 @@
+; Project 6
+; @file utils.inc
+; @author Maximilien Dagois, Darren Strash, Mia Chervenkova, Charlie Beard 
+; @date Nov 17 2024
+
 if !def(UTILS_RGBINC)
 def UTILS_RGBINC equ 1
 
