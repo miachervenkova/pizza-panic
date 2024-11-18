@@ -63,20 +63,53 @@ macro UpdateCollisionStatus
     ld a, [hl]
 
     cp a, SAFE_TILE_1
-    jp z, .safe
+    jp z, .check_right
 
     cp a, SAFE_TILE_2
-    jp z, .safe
+    jp z, .check_right
 
     cp a, SAFE_TILE_3
-    jp z, .safe
+    jp z, .check_right    
 
+    ; reset movememnt if in an illegal tile
     ld a, [CHEF_PREV_X]
     ld [CHEF_SPRITE_ADDRESS + OAMA_X], a
     ld a, [CHEF_PREV_Y]
     ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
 
-    .safe
+    jp .collisions_over
+
+    .check_right
+        ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
+        srl a
+        srl a
+        srl a
+        ld e, a
+        ld d, 0 ; de is the column
+
+        ld hl, BACKGROUND_VRAM_ORIGIN
+        add hl, de
+        add hl, bc
+        ; now hl contains VRAM location of current tile (of bottom right of sprite)
+
+        ld a, [hl]
+
+        cp a, SAFE_TILE_1
+        jp z, .collisions_over
+
+        cp a, SAFE_TILE_2
+        jp z, .collisions_over
+
+        cp a, SAFE_TILE_3
+        jp z, .collisions_over    
+
+        ; reset movememnt if in an illegal tile
+        ld a, [CHEF_PREV_X]
+        ld [CHEF_SPRITE_ADDRESS + OAMA_X], a
+        ld a, [CHEF_PREV_Y]
+        ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
+
+    .collisions_over
          
 endm
 
