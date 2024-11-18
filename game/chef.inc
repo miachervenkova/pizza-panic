@@ -1,3 +1,8 @@
+; Project 6
+; @file chef.inc
+; @author Mia Chervenkova and Charlie Beard
+; @date Nov 17 2024
+
 if !def(CHEF_INC)
 def CHEF_RGBINC equ 1
 
@@ -72,7 +77,6 @@ def SARDINE_TILE_ADRESS      equ (40)
 
 
 macro InitChefSprites
-
     rsset _OAMRAM
     def CHEF_SPRITE_ADDRESS         rl 1
     def PEPPERONI_SPRITE_ADDRESS    rl 1
@@ -116,38 +120,37 @@ macro UpdateChef
 endm
 
 macro MoveChef
-
     ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
     ld [CHEF_PREV_X], a
     ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
     ld [CHEF_PREV_Y], a
 
     .move_down
-    ld a, [JOYPAD_CURRENT_ADDRESS]
-    bit PADB_DOWN, a
-    jp z, .move_up
+        ld a, [JOYPAD_CURRENT_ADDRESS]
+        bit PADB_DOWN, a
+        jp z, .move_up
 
-    ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
-    inc a
-    ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
+        ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
+        inc a
+        ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
 
     .move_up
-    ld a, [JOYPAD_CURRENT_ADDRESS]
-    bit PADB_UP, a
-    jp z, .move_left
+        ld a, [JOYPAD_CURRENT_ADDRESS]
+        bit PADB_UP, a
+        jp z, .move_left
 
-    ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
-    dec a
-    ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
+        ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
+        dec a
+        ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
 
     .move_left
-    ld a, [JOYPAD_CURRENT_ADDRESS]
-    bit PADB_LEFT, a
-    jp z, .move_right
+        ld a, [JOYPAD_CURRENT_ADDRESS]
+        bit PADB_LEFT, a
+        jp z, .move_right
 
-    ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
-    dec a
-    ld [CHEF_SPRITE_ADDRESS + OAMA_X], a
+        ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
+        dec a
+        ld [CHEF_SPRITE_ADDRESS + OAMA_X], a
 
     .move_right
     ld a, [JOYPAD_CURRENT_ADDRESS]
@@ -227,7 +230,6 @@ macro CheckPepperoni
         res PEPPERONI_BIT, a
         ld [CURRENT_ORDER_INFO], a
 
-
     .no_pepperoni
 endm
 
@@ -262,7 +264,6 @@ macro CheckMushroom
         ld a, [CURRENT_ORDER_INFO]
         res MUSHROOM_BIT, a
         ld [CURRENT_ORDER_INFO], a
-
 
     .no_mushroom
 endm
@@ -387,7 +388,6 @@ macro UpdatePizza
 endm
 
 macro AddFireplace
-
     ld a, PIZZA_TILE_LINE_1
     ld hl, PIZZA_LINE_1
     ld [hl], a
@@ -477,6 +477,13 @@ macro AddPepperoni
     ld [PEPPERONI_SPRITE_ADDRESS + OAMA_X], a
     ld a, PIZZA_LEFT_Y_POS
     ld [PEPPERONI_SPRITE_ADDRESS + OAMA_Y], a
+
+    ; if topping not needed, play the invalid sound
+    ld a, [CURRENT_ORDER_INFO]
+    bit PEPPERONI_BIT, a
+    jp nz, .valid_pepperoni
+
+    .valid_pepperoni
 endm
 
 macro AddMushroom

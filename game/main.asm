@@ -1,3 +1,8 @@
+; Project 6
+; @file main.asm
+; @author Mia Chervenkova and Charlie Beard
+; @date Nov 6 2024
+
 include "hardware.inc"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -26,8 +31,8 @@ section "main", rom0
 main:
     DisableLCD
     
-    call InitSample
+    call InitGame
 
     .loop
-        call UpdateSample
+        call UpdateOnVblank
         jr .loop

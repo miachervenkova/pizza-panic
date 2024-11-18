@@ -1,3 +1,8 @@
+; Project 6
+; @file joypad.inc
+; @author Mia Chervenkova and Charlie Beard
+; @date Nov 17 2024
+
 if !def(JOYPAD_INC)
 def JOYPAD_INC equ 1
 
