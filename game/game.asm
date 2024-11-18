@@ -9,6 +9,7 @@ include "customers.inc"
 include "audio.inc"
 include "joypad.inc"
 include "timer_functions.asm"
+include "collision.inc"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -337,6 +338,7 @@ UpdateOnVblank:
         UpdateJoypad
         UpdateChef
         UpdateGameState
+        UpdateCollisionStatus
 
         ld a, [FRAME_COUNTER]
         dec a

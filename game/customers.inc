@@ -62,7 +62,7 @@ def ORDER_8             equ (%00011111)
 
 def FINAL_ORDER         equ (16)
 
-def TEMPLATE_PIZZA_OFFSET   equ (48)
+def TEMPLATE_PIZZA_OFFSET   equ (64)
 
 def TEMPLATE_LEFT_X_POS     equ (PIZZA_LEFT_X_POS + TEMPLATE_PIZZA_OFFSET)
 def TEMPLATE_LEFT_Y_POS     equ (PIZZA_LEFT_Y_POS)
@@ -168,17 +168,17 @@ macro InitCustomerSprites
 endm
 
 macro SendCustomer
-    copy [CUSTOMER_SPRITE_ADDRESS + OAMA_Y], COUNTER_Y_POS
-    copy [CUSTOMER_SPRITE_ADDRESS + OAMA_X], SPRITE_MAX_RIGHT
+    copy [CUSTOMER_SPRITE_ADDRESS + OAMA_Y], SPRITE_MAX_BOTTOM
+    copy [CUSTOMER_SPRITE_ADDRESS + OAMA_X], COUNTER_X_POS
 
-    ld a, COUNTER_X_POS
+    ld a, COUNTER_Y_POS
     ld b, a
-    ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_X]
+    ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_Y]
     .loop_enter_sprite
         halt
         halt
         dec a
-        copy [CUSTOMER_SPRITE_ADDRESS + OAMA_X], a
+        copy [CUSTOMER_SPRITE_ADDRESS + OAMA_Y], a
         cp a, b
         jp nz, .loop_enter_sprite
 endm
