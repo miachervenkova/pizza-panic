@@ -171,6 +171,10 @@ macro SendCustomer
 
     UpdateCustomerAppearance
 
+    ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
+    add a, BACK_SPRITE_OFFSET
+    ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
+
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_Y], SPRITE_MAX_BOTTOM
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_X], COUNTER_X_POS
 
@@ -184,9 +188,18 @@ macro SendCustomer
         copy [CUSTOMER_SPRITE_ADDRESS + OAMA_Y], a
         cp a, b
         jp nz, .loop_enter_sprite
+
+    ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
+    sub a, BACK_SPRITE_OFFSET
+    ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
 endm
 
 macro DepartCustomer
+
+    ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
+    add a, RIGHT_SPRITE_OFFSET
+    ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
+
     ld a, SPRITE_MAX_RIGHT
     ld b, a
     ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_X]
@@ -200,6 +213,10 @@ macro DepartCustomer
 
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_Y], 0
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_X], 0
+
+    ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
+    sub a, RIGHT_SPRITE_OFFSET
+    ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
 endm
 
 macro UpdateCustomerAppearance

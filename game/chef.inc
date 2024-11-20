@@ -194,6 +194,7 @@ macro UpdateChefOrientation
 
         ld a, [CHEF_SPRITE_ADDRESS + OAMA_FLAGS]
         set OAMB_XFLIP, a
+        ld [CHEF_SPRITE_ADDRESS + OAMA_FLAGS], a
         ld a, CHEF_TILE_ADDRESS + RIGHT_SPRITE_OFFSET
         ld [CHEF_SPRITE_ADDRESS + OAMA_TILEID], a
         jp .orientation_done
@@ -205,10 +206,9 @@ macro UpdateChefOrientation
 
         ld a, [CHEF_SPRITE_ADDRESS + OAMA_FLAGS]
         res OAMB_XFLIP, a
+        ld [CHEF_SPRITE_ADDRESS + OAMA_FLAGS], a
         ld a, CHEF_TILE_ADDRESS + RIGHT_SPRITE_OFFSET
         ld [CHEF_SPRITE_ADDRESS + OAMA_TILEID], a
-
-
 
     .orientation_done
 endm
