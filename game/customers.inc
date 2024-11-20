@@ -34,22 +34,22 @@ def SAUCE_BIT               equ (4)
 rsset LEVEL_INFO_LOCATION
 def CURRENT_ORDER_INFO  rb 1 ; state of the current order 
 def ORDER_NUMBER        rb 1 ; counter for the current order
-def LEVEL_1             rb 1 ; RENAME LEVEL 1 ORDER
-def LEVEL_2             rb 1
-def LEVEL_3             rb 1
-def LEVEL_4             rb 1
-def LEVEL_5             rb 1
-def LEVEL_6             rb 1
-def LEVEL_7             rb 1
-def LEVEL_8             rb 1
-def LEVEL_9             rb 1
-def LEVEL_10            rb 1
-def LEVEL_11            rb 1
-def LEVEL_12            rb 1
-def LEVEL_13            rb 1
-def LEVEL_14            rb 1
-def LEVEL_15            rb 1
-def LEVEL_16            rb 1
+def ORDER_SEQUENCE_1             rb 1 ; RENAME LEVEL 1 ORDER
+def ORDER_SEQUENCE_2             rb 1
+def ORDER_SEQUENCE_3             rb 1
+def ORDER_SEQUENCE_4             rb 1
+def ORDER_SEQUENCE_5             rb 1
+def ORDER_SEQUENCE_6             rb 1
+def ORDER_SEQUENCE_7             rb 1
+def ORDER_SEQUENCE_8             rb 1
+def ORDER_SEQUENCE_9             rb 1
+def ORDER_SEQUENCE_10            rb 1
+def ORDER_SEQUENCE_11            rb 1
+def ORDER_SEQUENCE_12            rb 1
+def ORDER_SEQUENCE_13            rb 1
+def ORDER_SEQUENCE_14            rb 1
+def ORDER_SEQUENCE_15            rb 1
+def ORDER_SEQUENCE_16            rb 1
 def LEVELS_COMPLETED    rb 1 ; counter of # of levels completed
 
 def ORDER_1             equ (%00010000)
@@ -90,37 +90,37 @@ def CUSTOMER_4_TILE_ADDRESS equ (22)
 ; populating order info in ram
 macro InitGameOrders
     ld a, ORDER_1
-    ld [LEVEL_1], a
+    ld [ORDER_SEQUENCE_1], a
     ld a, ORDER_2
-    ld [LEVEL_2], a
+    ld [ORDER_SEQUENCE_2], a
     ld a, ORDER_3
-    ld [LEVEL_3], a
+    ld [ORDER_SEQUENCE_3], a
     ld a, ORDER_1
-    ld [LEVEL_4], a
+    ld [ORDER_SEQUENCE_4], a
     ld a, ORDER_4
-    ld [LEVEL_5], a
+    ld [ORDER_SEQUENCE_5], a
     ld a, ORDER_3
-    ld [LEVEL_6], a
+    ld [ORDER_SEQUENCE_6], a
     ld a, ORDER_2
-    ld [LEVEL_7], a
+    ld [ORDER_SEQUENCE_7], a
     ld a, ORDER_5
-    ld [LEVEL_8], a
+    ld [ORDER_SEQUENCE_8], a
     ld a, ORDER_1
-    ld [LEVEL_9], a
+    ld [ORDER_SEQUENCE_9], a
     ld a, ORDER_7
-    ld [LEVEL_10], a
+    ld [ORDER_SEQUENCE_10], a
     ld a, ORDER_5
-    ld [LEVEL_11], a
+    ld [ORDER_SEQUENCE_11], a
     ld a, ORDER_6
-    ld [LEVEL_12], a
+    ld [ORDER_SEQUENCE_12], a
     ld a, ORDER_4
-    ld [LEVEL_13], a
+    ld [ORDER_SEQUENCE_13], a
     ld a, ORDER_3
-    ld [LEVEL_14], a
+    ld [ORDER_SEQUENCE_14], a
     ld a, ORDER_2
-    ld [LEVEL_15], a
+    ld [ORDER_SEQUENCE_15], a
     ld a, ORDER_8
-    ld [LEVEL_16], a
+    ld [ORDER_SEQUENCE_16], a
 
     ld a, FIRST_ORDER_NUMBER
     ld [ORDER_NUMBER], a
