@@ -181,13 +181,13 @@ macro SendCustomer
     ld a, COUNTER_Y_POS
     ld b, a
     ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_Y]
-    .loop_enter_sprite
+    .loop_enter_sprite\@
         halt
         halt
         dec a
         copy [CUSTOMER_SPRITE_ADDRESS + OAMA_Y], a
         cp a, b
-        jp nz, .loop_enter_sprite
+        jp nz, .loop_enter_sprite\@
 
     ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
     sub a, BACK_SPRITE_OFFSET
@@ -203,13 +203,13 @@ macro DepartCustomer
     ld a, SPRITE_MAX_RIGHT
     ld b, a
     ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_X]
-    .loop_exit_sprite
+    .loop_exit_sprite\@
         halt
         halt
         inc a
         copy [CUSTOMER_SPRITE_ADDRESS + OAMA_X], a
         cp a, b
-        jp nz, .loop_exit_sprite
+        jp nz, .loop_exit_sprite\@
 
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_Y], 0
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_X], 0
@@ -221,30 +221,30 @@ endm
 
 macro UpdateCustomerAppearance
    ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
-   .check_first
+   .check_first\@
        cp a, CUSTOMER_1_TILE_ADDRESS
-       jp nz, .check_second
+       jp nz, .check_second\@
        ld a, CUSTOMER_2_TILE_ADDRESS
        ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
-       jp .done_appearance
-   .check_second
+       jp .done_appearance\@
+   .check_second\@
        cp a, CUSTOMER_2_TILE_ADDRESS
-       jp nz, .check_third
+       jp nz, .check_third\@
        ld a, CUSTOMER_3_TILE_ADDRESS
        ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
-       jp .done_appearance
-   .check_third
+       jp .done_appearance\@
+   .check_third\@
        cp a, CUSTOMER_3_TILE_ADDRESS
-       jp nz, .check_fourth
+       jp nz, .check_fourth\@
        ld a, CUSTOMER_4_TILE_ADDRESS
        ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
-       jp .done_appearance
-   .check_fourth
+       jp .done_appearance\@
+   .check_fourth\@
        cp a, CUSTOMER_4_TILE_ADDRESS
-       jp nz, .done_appearance
+       jp nz, .done_appearance\@
        ld a, CUSTOMER_1_TILE_ADDRESS
        ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
-   .done_appearance
+   .done_appearance\@
 endm
 
 macro UpdateTemplatePizza
@@ -254,51 +254,51 @@ macro UpdateTemplatePizza
     ld b, 0
     add hl, bc
 
-    .temp_pepperoni
+    .temp_pepperoni\@
         ld a, [hl]
         bit PEPPERONI_BIT, a
-        jp z, .temp_no_pepperoni
+        jp z, .temp_no_pepperoni\@
         copy [CUSTOMER_PEPPERONI_SPRITE_ADDRESS + OAMA_Y], TEMPLATE_LEFT_Y_POS
         copy [CUSTOMER_PEPPERONI_SPRITE_ADDRESS + OAMA_X], TEMPLATE_LEFT_X_POS
-        jp .temp_mushroom
-    .temp_no_pepperoni
+        jp .temp_mushroom\@
+    .temp_no_pepperoni\@
         copy [CUSTOMER_PEPPERONI_SPRITE_ADDRESS + OAMA_Y], 0
         copy [CUSTOMER_PEPPERONI_SPRITE_ADDRESS + OAMA_X], 0
 
-    .temp_mushroom
+    .temp_mushroom\@
         ld a, [hl]
         bit MUSHROOM_BIT, a
-        jp z, .temp_no_mushroom
+        jp z, .temp_no_mushroom\@
         copy [CUSTOMER_MUSHROOM_SPRITE_ADDRESS + OAMA_Y], TEMPLATE_LEFT_Y_POS
         copy [CUSTOMER_MUSHROOM_SPRITE_ADDRESS + OAMA_X], TEMPLATE_LEFT_X_POS
-        jp .temp_onion
-    .temp_no_mushroom
+        jp .temp_onion\@
+    .temp_no_mushroom\@
         copy [CUSTOMER_MUSHROOM_SPRITE_ADDRESS + OAMA_Y], 0
         copy [CUSTOMER_MUSHROOM_SPRITE_ADDRESS + OAMA_X], 0
 
-    .temp_onion
+    .temp_onion\@
         ld a, [hl]
         bit ONION_BIT, a
-        jp z, .temp_no_onion
+        jp z, .temp_no_onion\@
         copy [CUSTOMER_ONION_SPRITE_ADDRESS + OAMA_Y], TEMPLATE_RIGHT_Y_POS
         copy [CUSTOMER_ONION_SPRITE_ADDRESS + OAMA_X], TEMPLATE_RIGHT_X_POS
-        jp .temp_sardine
-    .temp_no_onion
+        jp .temp_sardine\@
+    .temp_no_onion\@
         copy [CUSTOMER_ONION_SPRITE_ADDRESS + OAMA_Y], 0
         copy [CUSTOMER_ONION_SPRITE_ADDRESS + OAMA_X], 0
 
-    .temp_sardine    
+    .temp_sardine\@ 
         ld a, [hl]
         bit SARDINE_BIT, a
-        jp z, .temp_no_sardine
+        jp z, .temp_no_sardine\@
         copy [CUSTOMER_SARDINE_SPRITE_ADDRESS + OAMA_Y], TEMPLATE_RIGHT_Y_POS
         copy [CUSTOMER_SARDINE_SPRITE_ADDRESS + OAMA_X], TEMPLATE_RIGHT_X_POS
-        jp .temp_done
-    .temp_no_sardine
+        jp .temp_done\@
+    .temp_no_sardine\@
         copy [CUSTOMER_SARDINE_SPRITE_ADDRESS + OAMA_Y], 0
         copy [CUSTOMER_SARDINE_SPRITE_ADDRESS + OAMA_X], 0
 
-    .temp_done
+    .temp_done\@
 endm
 
 macro CheckOrderDone
@@ -312,20 +312,20 @@ macro CheckOrderDone
     ld a, [hl]
     
     cp a, d
-    jp nz, .continue
+    jp nz, .continue\@
 
     PlayCoinSound
     DepartCustomer
     StartNextOrder
 
-    .continue
+    .continue\@
 endm
 
 macro StartNextOrder
     ld a, [ORDER_NUMBER]
     ld b, a
     cp a, FINAL_ORDER
-    jp nz, .skip_reset
+    jp nz, .skip_reset\@
 
     ld a, [LEVELS_COMPLETED]
     add a, b
@@ -333,7 +333,7 @@ macro StartNextOrder
 
     ld a, 0
     
-    .skip_reset
+    .skip_reset\@
         inc a
         ld [ORDER_NUMBER], a
 

@@ -12,30 +12,30 @@ include "utils.inc"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; pizza topping retrieval location ranges
-def FIREPLACE_X_POS     equ (40)
-def FIREPLACE_Y_POS     equ (40)
-def FIREPALCE_WIDTH     equ (32)
-def FIREPLACE_HEIGHT    equ (8)
+def FIREPLACE_X_POS_LEFT     equ (40)
+def FIREPLACE_Y_POS_TOP      equ (40)
+def FIREPLACE_X_POS_RIGHT    equ (FIREPLACE_X_POS_LEFT + 32)
+def FIREPLACE_Y_POS_BOTTOM   equ (FIREPLACE_Y_POS_TOP + 8)
 
-def PEPPERONI_X_POS     equ (88)
-def PEPPERONI_Y_POS     equ (40)
-def PEPPERONI_WIDTH     equ (24)
-def PEPPERONI_HEIGHT    equ (8)
+def PEPPERONI_X_POS_LEFT     equ (88)
+def PEPPERONI_Y_POS_TOP      equ (40)
+def PEPPERONI_X_POS_RIGHT    equ (PEPPERONI_X_POS_LEFT + 24)
+def PEPPERONI_Y_POS_BOTTOM   equ (PEPPERONI_Y_POS_TOP + 8)
 
-def MUSHROOM_X_POS      equ (24)
-def MUSHROOM_Y_POS      equ (48)
-def MUSHROOM_WIDTH      equ (16)
-def MUSHROOM_HEIGHT     equ (8)
+def MUSHROOM_X_POS_LEFT      equ (24)
+def MUSHROOM_Y_POS_TOP       equ (48)
+def MUSHROOM_X_POS_RIGHT     equ (MUSHROOM_X_POS_LEFT + 16)
+def MUSHROOM_Y_POS_BOTTOM    equ (MUSHROOM_Y_POS_TOP + 8)
 
-def ONION_X_POS         equ (16)
-def ONION_Y_POS         equ (90)
-def ONION_WIDTH         equ (32)
-def ONION_HEIGHT        equ (8)
+def ONION_X_POS_LEFT         equ (16)
+def ONION_Y_POS_TOP          equ (90)
+def ONION_X_POS_RIGHT        equ (ONION_X_POS_LEFT + 32)
+def ONION_Y_POS_BOTTOM       equ (ONION_Y_POS_TOP + 8)
 
-def SARDINE_X_POS       equ (132)
-def SARDINE_Y_POS       equ (40)
-def SARDINE_WIDTH       equ (24)
-def SARDINE_HEIGHT      equ (8)
+def SARDINE_X_POS_LEFT       equ (132)
+def SARDINE_Y_POS_TOP        equ (40)
+def SARDINE_X_POS_RIGHT      equ (SARDINE_X_POS_LEFT + 24)
+def SARDINE_Y_POS_BOTTOM     equ (SARDINE_Y_POS_TOP + 8)
 
 ; locations to move topping sprites on pizza
 def PIZZA_LEFT_X_POS    equ (80)
@@ -65,6 +65,15 @@ def CHEF_START_POS_Y    equ (102)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; sprite OAM locations
+
+rsset _OAMRAM
+def CHEF_SPRITE_ADDRESS         rl 1
+def PEPPERONI_SPRITE_ADDRESS    rl 1
+def MUSHROOM_SPRITE_ADDRESS     rl 1
+def ONION_SPRITE_ADDRESS        rl 1
+def SARDINE_SPRITE_ADDRESS      rl 1
+
 ;sprite tile addresses
 
 def CHEF_TILE_ADDRESS       equ (4)
@@ -78,15 +87,8 @@ def BACK_SPRITE_OFFSET      equ (4)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
+; initializes OAM data for the sprites associated with the chef
 macro InitChefSprites
-    rsset _OAMRAM
-    def CHEF_SPRITE_ADDRESS         rl 1
-    def PEPPERONI_SPRITE_ADDRESS    rl 1
-    def MUSHROOM_SPRITE_ADDRESS     rl 1
-    def ONION_SPRITE_ADDRESS        rl 1
-    def SARDINE_SPRITE_ADDRESS      rl 1
-
     copy [CHEF_SPRITE_ADDRESS + OAMA_Y], CHEF_START_POS_Y
     copy [CHEF_SPRITE_ADDRESS + OAMA_X], CHEF_START_POS_X
     copy [CHEF_SPRITE_ADDRESS + OAMA_TILEID], CHEF_TILE_ADDRESS
@@ -111,98 +113,101 @@ macro InitChefSprites
     copy [SARDINE_SPRITE_ADDRESS + OAMA_X], 0
     copy [SARDINE_SPRITE_ADDRESS + OAMA_TILEID], SARDINE_TILE_ADRESS
     copy [SARDINE_SPRITE_ADDRESS + OAMA_FLAGS], OAMF_PAL0
-
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; handles all functionality for the chef, each vblank
 macro UpdateChef
     MoveChef
     CheckChefPosition
     UpdatePizza
 endm
 
+; move the chef sprite based on joypad input
 macro MoveChef
+    ; storing previous location in memory for use with collisions
     ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
     ld [CHEF_PREV_X], a
     ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
     ld [CHEF_PREV_Y], a
 
-    .move_down
+    .move_down\@
         ld a, [JOYPAD_CURRENT_ADDRESS]
         bit PADB_DOWN, a
-        jp z, .move_up
+        jp z, .move_up\@
 
         ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
         inc a
         ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
 
-    .move_up
+    .move_up\@
         ld a, [JOYPAD_CURRENT_ADDRESS]
         bit PADB_UP, a
-        jp z, .move_left
+        jp z, .move_left\@
 
         ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
         dec a
         ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
 
-    .move_left
+    .move_left\@
         ld a, [JOYPAD_CURRENT_ADDRESS]
         bit PADB_LEFT, a
-        jp z, .move_right
+        jp z, .move_right\@
 
         ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
         dec a
         ld [CHEF_SPRITE_ADDRESS + OAMA_X], a
 
-    .move_right
-    ld a, [JOYPAD_CURRENT_ADDRESS]
-    bit PADB_RIGHT, a
-    jp z, .move_none
+    .move_right\@
+        ld a, [JOYPAD_CURRENT_ADDRESS]
+        bit PADB_RIGHT, a
+        jp z, .move_none\@
 
-    ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
-    inc a
-    ld [CHEF_SPRITE_ADDRESS + OAMA_X], a
+        ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
+        inc a
+        ld [CHEF_SPRITE_ADDRESS + OAMA_X], a
 
-    .move_none
+    .move_none\@
 
     UpdateChefOrientation
 endm
 
+; change the chef sprite's orientation based on which buttons are held
 macro UpdateChefOrientation
-    .check_chef_up
+    .check_chef_up\@
         ld a, [JOYPAD_PRESSED_ADDRESS]
         bit PADB_UP, a
-        jp z, .check_chef_down
+        jp z, .check_chef_down\@
 
         ld a, CHEF_TILE_ADDRESS + BACK_SPRITE_OFFSET
         ld [CHEF_SPRITE_ADDRESS + OAMA_TILEID], a
-        jp .check_chef_left
+        jp .check_chef_left\@
 
-    .check_chef_down
+    .check_chef_down\@
         ld a, [JOYPAD_PRESSED_ADDRESS]
         bit PADB_DOWN, a
-        jp z, .check_chef_left
+        jp z, .check_chef_left\@
 
         ld a, CHEF_TILE_ADDRESS
         ld [CHEF_SPRITE_ADDRESS + OAMA_TILEID], a
 
-    .check_chef_left
+    .check_chef_left\@
         ld a, [JOYPAD_PRESSED_ADDRESS]
         bit PADB_LEFT, a
-        jp z, .check_chef_right
+        jp z, .check_chef_right\@
 
         ld a, [CHEF_SPRITE_ADDRESS + OAMA_FLAGS]
         set OAMB_XFLIP, a
         ld [CHEF_SPRITE_ADDRESS + OAMA_FLAGS], a
         ld a, CHEF_TILE_ADDRESS + RIGHT_SPRITE_OFFSET
         ld [CHEF_SPRITE_ADDRESS + OAMA_TILEID], a
-        jp .orientation_done
+        jp .orientation_done\@
 
-    .check_chef_right
+    .check_chef_right\@
         ld a, [JOYPAD_PRESSED_ADDRESS]
         bit PADB_RIGHT, a
-        jp z, .orientation_done
+        jp z, .orientation_done\@
 
         ld a, [CHEF_SPRITE_ADDRESS + OAMA_FLAGS]
         res OAMB_XFLIP, a
@@ -210,229 +215,130 @@ macro UpdateChefOrientation
         ld a, CHEF_TILE_ADDRESS + RIGHT_SPRITE_OFFSET
         ld [CHEF_SPRITE_ADDRESS + OAMA_TILEID], a
 
-    .orientation_done
+    .orientation_done\@
 endm
 
 macro CheckChefPosition
     CheckFireplace
-    CheckPepperoni
-    CheckMushroom
-    CheckOnion
-    CheckSardine
+    CheckTopping PEPPERONI_X_POS_LEFT, PEPPERONI_X_POS_RIGHT, PEPPERONI_Y_POS_TOP, PEPPERONI_Y_POS_BOTTOM, PEPPERONI_BIT
+    CheckTopping MUSHROOM_X_POS_LEFT, MUSHROOM_X_POS_RIGHT, MUSHROOM_Y_POS_TOP, MUSHROOM_Y_POS_BOTTOM, MUSHROOM_BIT
+    CheckTopping ONION_X_POS_LEFT, ONION_X_POS_RIGHT, ONION_Y_POS_TOP, ONION_Y_POS_BOTTOM, ONION_BIT
+    CheckTopping SARDINE_X_POS_LEFT, SARDINE_X_POS_RIGHT, SARDINE_Y_POS_TOP, SARDINE_Y_POS_BOTTOM, SARDINE_BIT
 endm
 
 macro CheckFireplace
     ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
-    cp a, FIREPLACE_X_POS
-    jp c, .no_fireplace
+    cp a, FIREPLACE_X_POS_LEFT
+    jp c, .no_fireplace\@
 
-    cp a, FIREPLACE_X_POS + FIREPALCE_WIDTH
-    jp nc, .no_fireplace
+    cp a, FIREPLACE_X_POS_RIGHT
+    jp nc, .no_fireplace\@
 
     ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
-    cp a, FIREPLACE_Y_POS
-    jp c, .no_fireplace
+    cp a, FIREPLACE_Y_POS_TOP
+    jp c, .no_fireplace\@
 
-    cp a, FIREPLACE_Y_POS + FIREPLACE_HEIGHT
-    jp nc, .no_fireplace
+    cp a, FIREPLACE_Y_POS_BOTTOM
+    jp nc, .no_fireplace\@
 
     ld a, [JOYPAD_PRESSED_ADDRESS]
     bit PADB_A, a
-    jp z, .no_fireplace
+    jp z, .no_fireplace\@
 
     ld a, [CURRENT_ORDER_INFO]
     set SAUCE_BIT, a
     ld [CURRENT_ORDER_INFO], a
 
-    .no_fireplace
+    .no_fireplace\@
 endm
 
-macro CheckPepperoni
+; Arguments:
+; \1 is topping left x position
+; \2 is topping right X position
+; \3 is topping left y position
+; \4 is topping right y position
+; \5 is topping bit position
+macro CheckTopping
     ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
-    cp a, PEPPERONI_X_POS
-    jp c, .no_pepperoni
+    cp a, \1
+    jp c, .no_topping\@
 
-    cp a, PEPPERONI_X_POS + PEPPERONI_WIDTH
-    jp nc, .no_pepperoni
+    cp a, \2
+    jp nc, .no_topping\@
 
     ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
-    cp a, PEPPERONI_Y_POS
-    jp c, .no_pepperoni
+    cp a, \3
+    jp c, .no_topping\@
 
-    cp a, PEPPERONI_Y_POS + PEPPERONI_HEIGHT
-    jp nc, .no_pepperoni
-
-    ld a, [JOYPAD_PRESSED_ADDRESS]
-    bit 0, a
-    jp z, .check_rm_pepperoni
-
-    ld a, [CURRENT_ORDER_INFO]
-    set PADB_A, a
-    ld [CURRENT_ORDER_INFO], a
-
-    .check_rm_pepperoni
-        ld a, [JOYPAD_PRESSED_ADDRESS]
-        bit PADB_B, a
-        jp z, .no_pepperoni
-
-        ld a, [CURRENT_ORDER_INFO]
-        res PEPPERONI_BIT, a
-        ld [CURRENT_ORDER_INFO], a
-
-    .no_pepperoni
-endm
-
-macro CheckMushroom
-    ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
-    cp a, MUSHROOM_X_POS
-    jp c, .no_mushroom
-
-    cp a, MUSHROOM_X_POS + MUSHROOM_WIDTH
-    jp nc, .no_mushroom
-
-    ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
-    cp a, MUSHROOM_Y_POS
-    jp c, .no_mushroom
-
-    cp a, MUSHROOM_Y_POS + MUSHROOM_HEIGHT
-    jp nc, .no_mushroom
+    cp a, \4
+    jp nc, .no_topping\@
 
     ld a, [JOYPAD_PRESSED_ADDRESS]
     bit PADB_A, a
-    jp z, .check_rm_mushroom
+    jp z, .check_rm_topping\@
 
     ld a, [CURRENT_ORDER_INFO]
-    set MUSHROOM_BIT, a
+    set \5, a
     ld [CURRENT_ORDER_INFO], a
 
-    .check_rm_mushroom
+    .check_rm_topping\@
         ld a, [JOYPAD_PRESSED_ADDRESS]
         bit PADB_B, a
-        jp z, .no_mushroom
+        jp z, .no_topping\@
 
         ld a, [CURRENT_ORDER_INFO]
-        res MUSHROOM_BIT, a
+        res \5, a
         ld [CURRENT_ORDER_INFO], a
 
-    .no_mushroom
-endm
-
-macro CheckOnion
-    ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
-    cp a, ONION_X_POS
-    jp c, .no_onion
-
-    cp a, ONION_X_POS + ONION_WIDTH
-    jp nc, .no_onion
-
-    ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
-    cp a, ONION_Y_POS
-    jp c, .no_onion
-
-    cp a, ONION_Y_POS + ONION_HEIGHT
-    jp nc, .no_onion
-
-    ld a, [JOYPAD_PRESSED_ADDRESS]
-    bit PADB_A, a
-    jp z, .check_rm_onion
-
-    ld a, [CURRENT_ORDER_INFO]
-    set ONION_BIT, a
-    ld [CURRENT_ORDER_INFO], a
-
-    .check_rm_onion
-        ld a, [JOYPAD_PRESSED_ADDRESS]
-        bit PADB_B, a
-        jp z, .no_onion
-
-        ld a, [CURRENT_ORDER_INFO]
-        res ONION_BIT, a
-        ld [CURRENT_ORDER_INFO], a
-
-    .no_onion
-endm
-
-macro CheckSardine
-    ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
-    cp a, SARDINE_X_POS
-    jp c, .no_sardine
-
-    cp a, SARDINE_X_POS + SARDINE_WIDTH
-    jp nc, .no_sardine
-
-    ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
-    cp a, SARDINE_Y_POS
-    jp c, .no_sardine
-
-    cp a, SARDINE_Y_POS + SARDINE_HEIGHT
-    jp nc, .no_sardine
-
-    ld a, [JOYPAD_PRESSED_ADDRESS]
-    bit PADB_A, a
-    jp z, .check_rm_sardine
-
-    ld a, [CURRENT_ORDER_INFO]
-    set SARDINE_BIT, a
-    ld [CURRENT_ORDER_INFO], a
-
-    .check_rm_sardine
-        ld a, [JOYPAD_PRESSED_ADDRESS]
-        bit PADB_B, a
-        jp z, .no_sardine
-
-        ld a, [CURRENT_ORDER_INFO]
-        res SARDINE_BIT, a
-        ld [CURRENT_ORDER_INFO], a
-
-    .no_sardine
+    .no_topping\@
 endm
 
 macro UpdatePizza
-    .fireplace
+    .fireplace\@
         ld a, [CURRENT_ORDER_INFO]
         bit SAUCE_BIT, a
-        jp z, .rm_fireplace
+        jp z, .rm_fireplace\@
         AddFireplace
-        jp .pepperoni
-    .rm_fireplace
+        jp .pepperoni\@
+    .rm_fireplace\@
         RmFireplace
     
-    .pepperoni
+    .pepperoni\@
         ld a, [CURRENT_ORDER_INFO]
         bit PEPPERONI_BIT, a
-        jp z, .rm_pepperoni
-        AddPepperoni
-        jp .mushroom
-    .rm_pepperoni
-        RmPepperoni
+        jp z, .rm_pepperoni\@
+        AddTopping PIZZA_LEFT_X_POS, PIZZA_LEFT_Y_POS, [PEPPERONI_SPRITE_ADDRESS + OAMA_X], [PEPPERONI_SPRITE_ADDRESS + OAMA_Y]
+        jp .mushroom\@
+    .rm_pepperoni\@
+        RmTopping [PEPPERONI_SPRITE_ADDRESS + OAMA_X], [PEPPERONI_SPRITE_ADDRESS + OAMA_Y]
 
-    .mushroom
+    .mushroom\@
         ld a, [CURRENT_ORDER_INFO]
         bit MUSHROOM_BIT, a
-        jp z, .rm_mushroom
-        AddMushroom
-        jp .onion
-    .rm_mushroom
-        RmMushroom
+        jp z, .rm_mushroom\@
+        AddTopping PIZZA_LEFT_X_POS, PIZZA_LEFT_Y_POS, [MUSHROOM_SPRITE_ADDRESS + OAMA_X], [MUSHROOM_SPRITE_ADDRESS + OAMA_Y]
+        jp .onion\@
+    .rm_mushroom\@
+        RmTopping [MUSHROOM_SPRITE_ADDRESS + OAMA_X], [MUSHROOM_SPRITE_ADDRESS + OAMA_Y]
 
-    .onion
+    .onion\@
         ld a, [CURRENT_ORDER_INFO]
         bit ONION_BIT, a
-        jp z, .rm_onion
-        AddOnion
-        jp .sardine
-    .rm_onion
-        RmOnion
+        jp z, .rm_onion\@
+        AddTopping PIZZA_RIGHT_X_POS, PIZZA_RIGHT_Y_POS, [ONION_SPRITE_ADDRESS + OAMA_X], [ONION_SPRITE_ADDRESS + OAMA_Y]
+        jp .sardine\@
+    .rm_onion\@
+        RmTopping [ONION_SPRITE_ADDRESS + OAMA_X], [ONION_SPRITE_ADDRESS + OAMA_Y]
 
-    .sardine
+    .sardine\@
         ld a, [CURRENT_ORDER_INFO]
         bit SARDINE_BIT, a
-        jp z, .rm_sardine
-        AddSardine
-        jp .done
-    .rm_sardine
-        RmSardine
-    .done
+        jp z, .rm_sardine\@
+        AddTopping PIZZA_RIGHT_X_POS, PIZZA_RIGHT_Y_POS, [SARDINE_SPRITE_ADDRESS + OAMA_X], [SARDINE_SPRITE_ADDRESS + OAMA_Y]
+        jp .done\@
+    .rm_sardine\@
+        RmTopping [SARDINE_SPRITE_ADDRESS + OAMA_X], [SARDINE_SPRITE_ADDRESS + OAMA_Y]
+    .done\@
     
 endm
 
@@ -521,67 +427,24 @@ macro RmFireplace
     
 endm
 
-macro AddPepperoni
-    ld a, PIZZA_LEFT_X_POS
-    ld [PEPPERONI_SPRITE_ADDRESS + OAMA_X], a
-    ld a, PIZZA_LEFT_Y_POS
-    ld [PEPPERONI_SPRITE_ADDRESS + OAMA_Y], a
-
-    ; if topping not needed, play the invalid sound
-    ld a, [CURRENT_ORDER_INFO]
-    bit PEPPERONI_BIT, a
-    jp nz, .valid_pepperoni
-
-    .valid_pepperoni
+; \1 is pizza x position
+; \2 is pizza y position
+; \3 is sprite x oam position
+; \4 is sprite y oam position
+macro AddTopping
+    ld a, \1
+    ld \3, a
+    ld a, \2
+    ld \4, a
 endm
 
-macro AddMushroom
-    ld a, PIZZA_LEFT_X_POS
-    ld [MUSHROOM_SPRITE_ADDRESS + OAMA_X], a
-    ld a, PIZZA_LEFT_Y_POS
-    ld [MUSHROOM_SPRITE_ADDRESS + OAMA_Y], a
-endm
-
-macro AddOnion
-    ld a, PIZZA_RIGHT_X_POS
-    ld [ONION_SPRITE_ADDRESS + OAMA_X], a
-    ld a, PIZZA_RIGHT_Y_POS
-    ld [ONION_SPRITE_ADDRESS + OAMA_Y], a
-endm
-
-macro AddSardine
-    ld a, PIZZA_RIGHT_X_POS
-    ld [SARDINE_SPRITE_ADDRESS + OAMA_X], a
-    ld a, PIZZA_RIGHT_Y_POS
-    ld [SARDINE_SPRITE_ADDRESS + OAMA_Y], a
-endm
-
-macro RmPepperoni
+; \1 is sprite oam x position
+; \2 is sprite oam y position
+macro RmTopping
     ld a, 0
-    ld [PEPPERONI_SPRITE_ADDRESS + OAMA_X], a
+    ld \1, a
     ld a, 0
-    ld [PEPPERONI_SPRITE_ADDRESS + OAMA_Y], a
-endm
-
-macro RmMushroom
-    ld a, 0
-    ld [MUSHROOM_SPRITE_ADDRESS + OAMA_X], a
-    ld a, 0
-    ld [MUSHROOM_SPRITE_ADDRESS + OAMA_Y], a
-endm
-
-macro RmOnion
-    ld a, 0
-    ld [ONION_SPRITE_ADDRESS + OAMA_X], a
-    ld a, 0
-    ld [ONION_SPRITE_ADDRESS + OAMA_Y], a
-endm
-
-macro RmSardine
-    ld a, 0
-    ld [SARDINE_SPRITE_ADDRESS + OAMA_X], a
-    ld a, 0
-    ld [SARDINE_SPRITE_ADDRESS + OAMA_Y], a
+    ld \2, a
 endm
 
 endc

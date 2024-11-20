@@ -44,10 +44,10 @@ macro UpdateCollisionStatus
     ld b, 0
     ld c, BACKGROUND_ROW_SIZE
     
-    .multiply
+    .multiply\@
         add hl, bc
         dec a
-        jp nz, .multiply
+        jp nz, .multiply\@
 
     ld b, h
     ld c, l
@@ -63,13 +63,13 @@ macro UpdateCollisionStatus
     ld a, [hl]
 
     cp a, SAFE_TILE_1
-    jp z, .check_right
+    jp z, .check_right\@
 
     cp a, SAFE_TILE_2
-    jp z, .check_right
+    jp z, .check_right\@
 
     cp a, SAFE_TILE_3
-    jp z, .check_right    
+    jp z, .check_right\@  
 
     ; reset movememnt if in an illegal tile
     ld a, [CHEF_PREV_X]
@@ -77,9 +77,9 @@ macro UpdateCollisionStatus
     ld a, [CHEF_PREV_Y]
     ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
 
-    jp .collisions_over
+    jp .collisions_over\@
 
-    .check_right
+    .check_right\@
         ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
         srl a
         srl a
@@ -95,13 +95,13 @@ macro UpdateCollisionStatus
         ld a, [hl]
 
         cp a, SAFE_TILE_1
-        jp z, .collisions_over
+        jp z, .collisions_over\@
 
         cp a, SAFE_TILE_2
-        jp z, .collisions_over
+        jp z, .collisions_over\@
 
         cp a, SAFE_TILE_3
-        jp z, .collisions_over    
+        jp z, .collisions_over\@  
 
         ; reset movememnt if in an illegal tile
         ld a, [CHEF_PREV_X]
@@ -109,7 +109,7 @@ macro UpdateCollisionStatus
         ld a, [CHEF_PREV_Y]
         ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
 
-    .collisions_over
+    .collisions_over\@
          
 endm
 
