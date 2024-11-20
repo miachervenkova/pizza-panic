@@ -104,17 +104,21 @@ def FRAME_DELAY                     equ (60)
 ; timers for each round
 def TIMER_ROUND_1                   equ (60)
 def TIMER_ROUND_2                   equ (40)
-def TIMER_ROUND_FINAL               equ (5)
+def TIMER_ROUND_FINAL               equ (14)
 
 ; game states
-def ROUNDS_SCORES                   equ ($FF83)
-def CURRENT_ROUND                   equ ($FF84)
+def CURRENT_ROUND                   equ ($FF83)
+def FINAL_ROUND_SCORE               equ ($FF84)
+
+; final round goal
+def FINAL_GOAL                      equ (4)
 
 ; game over text
 def YOU_MADE_TEXT_LINE              equ ($9926)
 def NUMBER_LINE                     equ ($9948)
 def PIZZAS_TEXT_LINE                equ ($9987)
-def GAME_OVER_LINE                  equ ($99C4)
+def OUT_OF_TEXT_LINE                equ ($99A6)
+def GAME_OVER_LINE                  equ ($99C3)
 
 STRING_YOU_MADE:
     db "YOU MADE\0"
@@ -122,8 +126,11 @@ STRING_YOU_MADE:
 STRING_PIZZAS:
     db "PIZZAS\0"
 
-STRING_GAME_OVER:
-    db "!!CONGRATS!!\0"
+STRING_CONGRATS:
+    db "IN 14 SEC! YAY!\0"
+
+STRING_TRY_AGAIN:
+    db "OUT OF 4\0"
 
 ; load the graphics data from ROM to VRAM
 macro LoadGraphicsDataIntoVRAM
@@ -217,8 +224,6 @@ macro InitRound
     cp 3
     jp z, .init_round_final
 
-    jp .invalid
-
     .init_round_1:
         ld a, TIMER_ROUND_1          
         ld [COUNTDOWN_TIMER], a
@@ -234,19 +239,45 @@ macro InitRound
     .init_round_final
         ld a, TIMER_ROUND_FINAL           
         ld [COUNTDOWN_TIMER], a
-        call UpdateTimerDisplay     
+        call UpdateTimerDisplay   
+        ld a, 0
+        ld [FINAL_ROUND_SCORE], a  
         jp .over
-     
-    .invalid:
-        halt
-        ld bc, GAME_OVER_LINE
-        ld hl, STRING_GAME_OVER
-        call print_text
-        .loop_game_over
-            jp .loop_game_over
 
     .over:        
         endm
+
+HandleEndGame:
+    ld a, [ORDER_NUMBER]
+    ld b, a
+    ld a, [LEVELS_COMPLETED]
+    add a, b
+    dec a
+    cp 4
+    ; if we made >= 4 pizzas
+    jp nc, .game_won
+    
+    ld bc, OUT_OF_TEXT_LINE
+    ld hl, STRING_TRY_AGAIN
+    call print_text
+
+    ld a, [CURRENT_ROUND]
+    dec a
+    ld [CURRENT_ROUND], a 
+    jp .handling_done
+    
+    .game_won
+        ld a, 1
+        ld [FINAL_ROUND_SCORE], a
+        ld bc, GAME_OVER_LINE
+        ld hl, STRING_CONGRATS
+        call print_text
+
+        ld a, 0         
+        ld [CURRENT_ROUND], a
+
+    .handling_done
+        ret
 
 ; show start screen when game over
 TimerEnd:
@@ -268,23 +299,18 @@ TimerEnd:
 
     ld a, [CURRENT_ROUND]
     cp 3
-    jp z, .write_congrats
-
-    ld a, 0
-    ld [LEVELS_COMPLETED], a
-    ld [ORDER_NUMBER], a
-    ld [CURRENT_ORDER_INFO], a
+    jp z, .game_over
     jp .over
 
-    .write_congrats
+    .game_over
+        call HandleEndGame
+
+    .over
         ld a, 0
-        ld [START_SCREEN_STATE], a
         ld [LEVELS_COMPLETED], a
         ld [ORDER_NUMBER], a
         ld [CURRENT_ORDER_INFO], a
-
-    .over
-        ret
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -365,7 +391,7 @@ UpdateOnVblank:
         dec a
         ld [FRAME_COUNTER], a
         jp nz, .skip_decrement
-
+        
         ld a, FRAME_DELAY
         ld [FRAME_COUNTER], a
 
