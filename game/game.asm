@@ -337,7 +337,7 @@ UpdateOnVblank:
     .game
         UpdateJoypad
         UpdateChef
-        UpdateGameState
+        CheckOrderDone
         UpdateCollisionStatus
 
         ld a, [FRAME_COUNTER]

@@ -22,6 +22,7 @@ def MUSHROOM_BIT            equ (1)
 def ONION_BIT               equ (2)
 def SARDINE_BIT             equ (3)
 def SAUCE_BIT               equ (4)
+
 ; storage method for level info:
 ;   bit 0 –> pepperoni topping
 ;   bit 1 –> mushroom topping
@@ -49,7 +50,7 @@ def LEVEL_13            rb 1
 def LEVEL_14            rb 1
 def LEVEL_15            rb 1
 def LEVEL_16            rb 1
-def LEVELS_COMPLETED    rb 1
+def LEVELS_COMPLETED    rb 1 ; counter of # of levels completed
 
 def ORDER_1             equ (%00010000)
 def ORDER_2             equ (%00010001)
@@ -79,7 +80,6 @@ def SPRITE_MAX_RIGHT        equ (168)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; customer tile positions
-
 def CUSTOMER_1_TILE_ADDRESS equ (42)
 def CUSTOMER_2_TILE_ADDRESS equ (10)
 def CUSTOMER_3_TILE_ADDRESS equ (16)
@@ -130,6 +130,7 @@ macro InitGameOrders
     ld [LEVELS_COMPLETED], a
 endm
 
+; sets initial positions and oam info for customer sprites, as well as template pizza
 macro InitCustomerSprites
     rsset (_OAMRAM + (NUM_CHEF_SPRITES * sizeof_OAM_ATTRS))
     def CUSTOMER_SPRITE_ADDRESS             rl 1
@@ -164,9 +165,9 @@ macro InitCustomerSprites
     copy [CUSTOMER_SARDINE_SPRITE_ADDRESS + OAMA_FLAGS], OAMF_PAL0
 
     UpdateTemplatePizza
-
 endm
 
+; sends a customer to the counter
 macro SendCustomer
 
     UpdateCustomerAppearance
@@ -194,6 +195,7 @@ macro SendCustomer
     ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
 endm
 
+; makes the customer exit the pizza shop
 macro DepartCustomer
 
     ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
@@ -219,6 +221,7 @@ macro DepartCustomer
     ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
 endm
 
+; changes the tileid of the sprite between orders, so customers cycle through
 macro UpdateCustomerAppearance
    ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
    .check_first\@
@@ -247,6 +250,7 @@ macro UpdateCustomerAppearance
    .done_appearance\@
 endm
 
+; updates template pizza between orders
 macro UpdateTemplatePizza
     ld hl, ORDER_NUMBER
     ld a, [ORDER_NUMBER]
@@ -301,6 +305,7 @@ macro UpdateTemplatePizza
     .temp_done\@
 endm
 
+; compares template pizza  with current order status to see if the pizza is done
 macro CheckOrderDone
     ld a, [CURRENT_ORDER_INFO]
     ld d, a
@@ -321,6 +326,7 @@ macro CheckOrderDone
     .continue\@
 endm
 
+; updates game info related to the specific order
 macro StartNextOrder
     ld a, [ORDER_NUMBER]
     ld b, a
@@ -344,11 +350,6 @@ macro StartNextOrder
 
     UpdateTemplatePizza
 endm
-
-macro UpdateGameState
-    CheckOrderDone
-endm
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

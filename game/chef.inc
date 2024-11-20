@@ -66,7 +66,6 @@ def CHEF_START_POS_Y    equ (102)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; sprite OAM locations
-
 rsset _OAMRAM
 def CHEF_SPRITE_ADDRESS         rl 1
 def PEPPERONI_SPRITE_ADDRESS    rl 1
@@ -75,7 +74,6 @@ def ONION_SPRITE_ADDRESS        rl 1
 def SARDINE_SPRITE_ADDRESS      rl 1
 
 ;sprite tile addresses
-
 def CHEF_TILE_ADDRESS       equ (4)
 def PEPPERONI_TILE_ADDRESS  equ (34)
 def MUSHROOM_TILE_ADDRESS   equ (36)
@@ -218,6 +216,7 @@ macro UpdateChefOrientation
     .orientation_done\@
 endm
 
+; comparing chef location with topping target locations
 macro CheckChefPosition
     CheckFireplace
     CheckTopping PEPPERONI_X_POS_LEFT, PEPPERONI_X_POS_RIGHT, PEPPERONI_Y_POS_TOP, PEPPERONI_Y_POS_BOTTOM, PEPPERONI_BIT
@@ -226,6 +225,7 @@ macro CheckChefPosition
     CheckTopping SARDINE_X_POS_LEFT, SARDINE_X_POS_RIGHT, SARDINE_Y_POS_TOP, SARDINE_Y_POS_BOTTOM, SARDINE_BIT
 endm
 
+; fireplace has to be separate because it moves tiles rather than sprites
 macro CheckFireplace
     ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
     cp a, FIREPLACE_X_POS_LEFT
@@ -252,7 +252,7 @@ macro CheckFireplace
     .no_fireplace\@
 endm
 
-; Arguments:
+; updates "current order" with appropriate topping based on args:
 ; \1 is topping left x position
 ; \2 is topping right X position
 ; \3 is topping left y position
@@ -293,6 +293,7 @@ macro CheckTopping
     .no_topping\@
 endm
 
+; updates the chef's pizza visually with any changes made from check toppings
 macro UpdatePizza
     .fireplace\@
         ld a, [CURRENT_ORDER_INFO]
@@ -338,10 +339,10 @@ macro UpdatePizza
         jp .done\@
     .rm_sardine\@
         RmTopping [SARDINE_SPRITE_ADDRESS + OAMA_X], [SARDINE_SPRITE_ADDRESS + OAMA_Y]
-    .done\@
-    
+    .done\@ 
 endm
 
+; moving tiles to add sauce to pizza
 macro AddFireplace
     ld a, PIZZA_TILE_LINE_1
     ld hl, PIZZA_LINE_1
@@ -384,6 +385,7 @@ macro AddFireplace
     ld [hl], a
 endm
 
+; removes sauce from pizza
 macro RmFireplace
     ld a, PIZZA_TILE_LINE_1 + PIZZA_TILE_OFFSET
     ld hl, PIZZA_LINE_1
@@ -427,6 +429,7 @@ macro RmFireplace
     
 endm
 
+; adds toppings in appropriate location based on args:
 ; \1 is pizza x position
 ; \2 is pizza y position
 ; \3 is sprite x oam position
@@ -438,6 +441,7 @@ macro AddTopping
     ld \4, a
 endm
 
+; removes topping based on args:
 ; \1 is sprite oam x position
 ; \2 is sprite oam y position
 macro RmTopping
