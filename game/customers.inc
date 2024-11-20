@@ -80,10 +80,10 @@ def SPRITE_MAX_RIGHT        equ (168)
 
 ; customer tile positions
 
-def CUSTOMER_1_TILE_ADDRESS equ (0)
-def CUSTOMER_2_TILE_ADDRESS equ (16)
-def CUSTOMER_3_TILE_ADDRESS equ (18)
-def CUSTOMER_4_TILE_ADDRESS equ (20)
+def CUSTOMER_1_TILE_ADDRESS equ (42)
+def CUSTOMER_2_TILE_ADDRESS equ (10)
+def CUSTOMER_3_TILE_ADDRESS equ (16)
+def CUSTOMER_4_TILE_ADDRESS equ (22)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -168,6 +168,9 @@ macro InitCustomerSprites
 endm
 
 macro SendCustomer
+
+    UpdateCustomerAppearance
+
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_Y], SPRITE_MAX_BOTTOM
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_X], COUNTER_X_POS
 
@@ -197,6 +200,34 @@ macro DepartCustomer
 
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_Y], 0
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_X], 0
+endm
+
+macro UpdateCustomerAppearance
+   ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
+   .check_first
+       cp a, CUSTOMER_1_TILE_ADDRESS
+       jp nz, .check_second
+       ld a, CUSTOMER_2_TILE_ADDRESS
+       ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
+       jp .done_appearance
+   .check_second
+       cp a, CUSTOMER_2_TILE_ADDRESS
+       jp nz, .check_third
+       ld a, CUSTOMER_3_TILE_ADDRESS
+       ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
+       jp .done_appearance
+   .check_third
+       cp a, CUSTOMER_3_TILE_ADDRESS
+       jp nz, .check_fourth
+       ld a, CUSTOMER_4_TILE_ADDRESS
+       ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
+       jp .done_appearance
+   .check_fourth
+       cp a, CUSTOMER_4_TILE_ADDRESS
+       jp nz, .done_appearance
+       ld a, CUSTOMER_1_TILE_ADDRESS
+       ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
+   .done_appearance
 endm
 
 macro UpdateTemplatePizza

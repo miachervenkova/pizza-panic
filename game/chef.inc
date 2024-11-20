@@ -73,6 +73,9 @@ def MUSHROOM_TILE_ADDRESS   equ (36)
 def ONION_TILE_ADDRESS      equ (38)
 def SARDINE_TILE_ADRESS      equ (40)
 
+def RIGHT_SPRITE_OFFSET     equ (2)
+def BACK_SPRITE_OFFSET      equ (4)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
@@ -162,6 +165,52 @@ macro MoveChef
     ld [CHEF_SPRITE_ADDRESS + OAMA_X], a
 
     .move_none
+
+    UpdateChefOrientation
+endm
+
+macro UpdateChefOrientation
+    .check_chef_up
+        ld a, [JOYPAD_PRESSED_ADDRESS]
+        bit PADB_UP, a
+        jp z, .check_chef_down
+
+        ld a, CHEF_TILE_ADDRESS + BACK_SPRITE_OFFSET
+        ld [CHEF_SPRITE_ADDRESS + OAMA_TILEID], a
+        jp .check_chef_left
+
+    .check_chef_down
+        ld a, [JOYPAD_PRESSED_ADDRESS]
+        bit PADB_DOWN, a
+        jp z, .check_chef_left
+
+        ld a, CHEF_TILE_ADDRESS
+        ld [CHEF_SPRITE_ADDRESS + OAMA_TILEID], a
+
+    .check_chef_left
+        ld a, [JOYPAD_PRESSED_ADDRESS]
+        bit PADB_LEFT, a
+        jp z, .check_chef_right
+
+        ld a, [CHEF_SPRITE_ADDRESS + OAMA_FLAGS]
+        set OAMB_XFLIP, a
+        ld a, CHEF_TILE_ADDRESS + RIGHT_SPRITE_OFFSET
+        ld [CHEF_SPRITE_ADDRESS + OAMA_TILEID], a
+        jp .orientation_done
+
+    .check_chef_right
+        ld a, [JOYPAD_PRESSED_ADDRESS]
+        bit PADB_RIGHT, a
+        jp z, .orientation_done
+
+        ld a, [CHEF_SPRITE_ADDRESS + OAMA_FLAGS]
+        res OAMB_XFLIP, a
+        ld a, CHEF_TILE_ADDRESS + RIGHT_SPRITE_OFFSET
+        ld [CHEF_SPRITE_ADDRESS + OAMA_TILEID], a
+
+
+
+    .orientation_done
 endm
 
 macro CheckChefPosition
