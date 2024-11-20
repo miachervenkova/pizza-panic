@@ -104,6 +104,7 @@ def FRAME_DELAY                     equ (60)
 ; timers for each round
 def TIMER_ROUND_1                   equ (60)
 def TIMER_ROUND_2                   equ (40)
+def TIMER_ROUND_FINAL               equ (5)
 
 ; game states
 def ROUNDS_SCORES                   equ ($FF83)
@@ -122,7 +123,7 @@ STRING_PIZZAS:
     db "PIZZAS\0"
 
 STRING_GAME_OVER:
-    db "GAME  OVER!!\0"
+    db "!!CONGRATS!!\0"
 
 ; load the graphics data from ROM to VRAM
 macro LoadGraphicsDataIntoVRAM
@@ -207,15 +208,16 @@ endm
 macro InitRound
     ld a, [CURRENT_ROUND]
 
-    ; alternate between even and odd rounds
-    and a, $01
-    cp 0
-    jp z, .init_round_2
+    cp 1
+    jp z, .init_round_1
     
-    ; we will develop these more
-    ; cp 2
-    ; jp z, .init_round_2
-    ; jp .invalid
+    cp 2
+    jp z, .init_round_2
+
+    cp 3
+    jp z, .init_round_final
+
+    jp .invalid
 
     .init_round_1:
         ld a, TIMER_ROUND_1          
@@ -229,13 +231,19 @@ macro InitRound
         call UpdateTimerDisplay     
         jp .over
 
-    ; .invalid:
-    ;     halt
-    ;     ld bc, GAME_OVER_LINE
-    ;     ld hl, STRING_GAME_OVER
-    ;     call print_text
-    ;     .loop_game_over
-    ;         jp .loop_game_over
+    .init_round_final
+        ld a, TIMER_ROUND_FINAL           
+        ld [COUNTDOWN_TIMER], a
+        call UpdateTimerDisplay     
+        jp .over
+     
+    .invalid:
+        halt
+        ld bc, GAME_OVER_LINE
+        ld hl, STRING_GAME_OVER
+        call print_text
+        .loop_game_over
+            jp .loop_game_over
 
     .over:        
         endm
@@ -258,12 +266,25 @@ TimerEnd:
     ld hl, STRING_PIZZAS
     call print_text
 
+    ld a, [CURRENT_ROUND]
+    cp 3
+    jp z, .write_congrats
+
     ld a, 0
     ld [LEVELS_COMPLETED], a
     ld [ORDER_NUMBER], a
     ld [CURRENT_ORDER_INFO], a
+    jp .over
 
-    ret
+    .write_congrats
+        ld a, 0
+        ld [START_SCREEN_STATE], a
+        ld [LEVELS_COMPLETED], a
+        ld [ORDER_NUMBER], a
+        ld [CURRENT_ORDER_INFO], a
+
+    .over
+        ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

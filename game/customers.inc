@@ -31,9 +31,9 @@ def SAUCE_BIT               equ (4)
 ;   bit 5-7 –> unused
 
 rsset LEVEL_INFO_LOCATION
-def CURRENT_ORDER_INFO  rb 1 ; state of the current order
+def CURRENT_ORDER_INFO  rb 1 ; state of the current order 
 def ORDER_NUMBER        rb 1 ; counter for the current order
-def LEVEL_1             rb 1
+def LEVEL_1             rb 1 ; RENAME LEVEL 1 ORDER
 def LEVEL_2             rb 1
 def LEVEL_3             rb 1
 def LEVEL_4             rb 1
