@@ -13,10 +13,22 @@ macro isStartPressed
     bit PADB_START, a 
     jp z, .nothing
 
-    ld a, 0
-    ld [START_SCREEN_STATE], a
+    ; check if game ended, then restart to start screen
+    ld a, [FINAL_ROUND_SCORE]
+    cp 1
+    jp z, .restart_game
 
     LoadBackgroundToVRAM
+    ld a, 0
+    ld [START_SCREEN_STATE], a
+    jp .nothing
+
+    .restart_game
+        LoadStartScreenToVRAM
+        ld a, 0
+        ld [FINAL_ROUND_SCORE], a
+        halt 
+        halt
 
     .nothing
 endm
