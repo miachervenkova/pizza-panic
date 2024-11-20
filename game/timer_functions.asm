@@ -5,6 +5,17 @@
 
 section "timer", rom0
 
+; timer location on window, value location
+def TIMER_POSITION                  equ ($9C43)
+def COUNTDOWN_TIMER                 equ ($FF81)
+def FRAME_COUNTER                   equ ($FF82)
+def FRAME_DELAY                     equ (60)  
+
+; timers for each round
+def TIMER_ROUND_1                   equ (60)
+def TIMER_ROUND_2                   equ (40)
+def TIMER_ROUND_FINAL               equ (14)
+
 ; updates timer tiles on display
 UpdateTimerDisplay:
     ld a, [COUNTDOWN_TIMER]

@@ -1,5 +1,5 @@
 SUMMARY:
-	ROM0: 11536 bytes used / 21232 free
+	ROM0: 11686 bytes used / 21082 free
 
 ROM0 bank #0:
 	SECTION: $0000-$0012 ($0013 bytes) ["main"]
@@ -7,22 +7,20 @@ ROM0 bank #0:
 	         $0000 = main.wait_vblank_u1
 	         $000e = main.loop
 	EMPTY: $0013-$003f ($002d bytes)
-	SECTION: $0040-$00f2 ($00b3 bytes) ["vblank_interrupt"]
-	         $0041 = STRING_YOU_MADE
-	         $004a = STRING_PIZZAS
-	         $0051 = STRING_CONGRATS
-	         $0061 = STRING_TRY_AGAIN
-	         $006a = HandleEndGame
-	         $008b = HandleEndGame.game_won
-	         $009e = HandleEndGame.handling_done
-	         $009f = TimerEnd
-	         $00b0 = TimerEnd.load_start_tilemap
-	         $00e4 = TimerEnd.game_over
-	         $00e7 = TimerEnd.over
-	EMPTY: $00f3-$00ff ($000d bytes)
+	SECTION: $0040-$0040 ($0001 byte) ["vblank_interrupt"]
+	SECTION: $0041-$008f ($004f bytes) ["timer"]
+	         $0041 = UpdateTimerDisplay
+	         $0059 = CalculateTotalPizzas
+	         $0070 = CalculateHundreds
+	         $0072 = CalculateHundreds.tens_loop
+	         $007b = CalculateHundreds.done_hundreds
+	         $0080 = CalculateTens
+	         $0082 = CalculateTens.tens_loop
+	         $008b = CalculateTens.done_tens
+	EMPTY: $0090-$00ff ($0070 bytes)
 	SECTION: $0100-$014f ($0050 bytes) ["header"]
 	         $0100 = entrypoint
-	SECTION: $0150-$08fa ($07ab bytes) ["game"]
+	SECTION: $0150-$093c ($07ed bytes) ["game"]
 	         $0150 = InitGame
 	         $016a = InitGame.load_data_u1
 	         $0189 = InitGame.init_round_1
@@ -30,90 +28,102 @@ ROM0 bank #0:
 	         $019f = InitGame.init_round_final
 	         $01af = InitGame.over
 	         $01ce = InitGame.init_oam_u2
-	         $031b = InitGame.temp_pepperoni
-	         $032e = InitGame.temp_no_pepperoni
-	         $0338 = InitGame.temp_mushroom
-	         $034b = InitGame.temp_no_mushroom
-	         $0355 = InitGame.temp_onion
-	         $0368 = InitGame.temp_no_onion
-	         $0372 = InitGame.temp_sardine
-	         $0385 = InitGame.temp_no_sardine
-	         $038f = InitGame.temp_done
+	         $031b = InitGame.temp_pepperoni_u3
+	         $032e = InitGame.temp_no_pepperoni_u3
+	         $0338 = InitGame.temp_mushroom_u3
+	         $034b = InitGame.temp_no_mushroom_u3
+	         $0355 = InitGame.temp_onion_u3
+	         $0368 = InitGame.temp_no_onion_u3
+	         $0372 = InitGame.temp_sardine_u3
+	         $0385 = InitGame.temp_no_sardine_u3
+	         $038f = InitGame.temp_done_u3
 	         $0390 = UpdateOnVblank
 	         $03fc = UpdateOnVblank.load_bg_tilemap
 	         $0417 = UpdateOnVblank.restart_game
 	         $0423 = UpdateOnVblank.load_start_tilemap
 	         $043d = UpdateOnVblank.nothing
 	         $0440 = UpdateOnVblank.game
-	         $0493 = UpdateOnVblank.move_down
-	         $04a2 = UpdateOnVblank.move_up
-	         $04b1 = UpdateOnVblank.move_left
-	         $04c0 = UpdateOnVblank.move_right
-	         $04cf = UpdateOnVblank.move_none
-	         $04f9 = UpdateOnVblank.no_fireplace
-	         $0523 = UpdateOnVblank.check_rm_pepperoni
-	         $0533 = UpdateOnVblank.no_pepperoni
-	         $055d = UpdateOnVblank.check_rm_mushroom
-	         $056d = UpdateOnVblank.no_mushroom
-	         $0597 = UpdateOnVblank.check_rm_onion
-	         $05a7 = UpdateOnVblank.no_onion
-	         $05d1 = UpdateOnVblank.check_rm_sardine
-	         $05e1 = UpdateOnVblank.no_sardine
-	         $05e1 = UpdateOnVblank.fireplace
-	         $061c = UpdateOnVblank.rm_fireplace
-	         $064c = UpdateOnVblank.pepperoni
-	         $0666 = UpdateOnVblank.valid_pepperoni
-	         $0669 = UpdateOnVblank.rm_pepperoni
-	         $0673 = UpdateOnVblank.mushroom
-	         $0688 = UpdateOnVblank.rm_mushroom
-	         $0692 = UpdateOnVblank.onion
-	         $06a7 = UpdateOnVblank.rm_onion
-	         $06b1 = UpdateOnVblank.sardine
-	         $06c6 = UpdateOnVblank.rm_sardine
-	         $06d0 = UpdateOnVblank.done
-	         $0702 = UpdateOnVblank.loop_exit_sprite
-	         $0729 = UpdateOnVblank.skip_reset
-	         $073d = UpdateOnVblank.loop_enter_sprite
-	         $0757 = UpdateOnVblank.temp_pepperoni
-	         $076a = UpdateOnVblank.temp_no_pepperoni
-	         $0774 = UpdateOnVblank.temp_mushroom
-	         $0787 = UpdateOnVblank.temp_no_mushroom
-	         $0791 = UpdateOnVblank.temp_onion
-	         $07a4 = UpdateOnVblank.temp_no_onion
-	         $07ae = UpdateOnVblank.temp_sardine
-	         $07c1 = UpdateOnVblank.temp_no_sardine
-	         $07cb = UpdateOnVblank.continue
-	         $07cb = UpdateOnVblank.temp_done
-	         $07ea = UpdateOnVblank.multiply
-	         $0815 = UpdateOnVblank.check_right
-	         $0842 = UpdateOnVblank.collisions_over
-	         $0863 = UpdateOnVblank.handle_timer_end
-	         $087f = UpdateOnVblank.init_round_1
-	         $088a = UpdateOnVblank.init_round_2
-	         $0895 = UpdateOnVblank.init_round_final
-	         $08a5 = UpdateOnVblank.skip_decrement
-	         $08a5 = UpdateOnVblank.over
-	         $08a6 = UpdateOnVblank.end
-	         $08a7 = print_text
-	         $08a7 = print_text.print_loop
-	         $08b7 = print_text.non_letter
-	         $08da = print_text.space
-	         $08df = print_text.exclamation
-	         $08e4 = print_text.comma
-	         $08e9 = print_text.dash
-	         $08ee = print_text.period
-	         $08f3 = print_text.question
-	         $08f5 = print_text.update_bc
-	         $08fa = print_text.done
-	SECTION: $08fb-$0949 ($004f bytes) ["timer"]
-	         $08fb = UpdateTimerDisplay
-	         $0913 = CalculateTotalPizzas
-	         $092a = CalculateHundreds
-	         $092c = CalculateHundreds.tens_loop
-	         $0935 = CalculateHundreds.done_hundreds
-	         $093a = CalculateTens
-	         $093c = CalculateTens.tens_loop
-	         $0945 = CalculateTens.done_tens
-	EMPTY: $094a-$5bff ($52b6 bytes)
+	         $0493 = UpdateOnVblank.move_down_u4
+	         $04a2 = UpdateOnVblank.move_up_u4
+	         $04b1 = UpdateOnVblank.move_left_u4
+	         $04c0 = UpdateOnVblank.move_right_u4
+	         $04cf = UpdateOnVblank.move_none_u4
+	         $04cf = UpdateOnVblank.check_chef_up_u5
+	         $04df = UpdateOnVblank.check_chef_down_u5
+	         $04ec = UpdateOnVblank.check_chef_left_u5
+	         $0504 = UpdateOnVblank.check_chef_right_u5
+	         $0519 = UpdateOnVblank.orientation_done_u5
+	         $0543 = UpdateOnVblank.no_fireplace_u6
+	         $056d = UpdateOnVblank.check_rm_topping_u7
+	         $057d = UpdateOnVblank.no_topping_u7
+	         $05a7 = UpdateOnVblank.check_rm_topping_u8
+	         $05b7 = UpdateOnVblank.no_topping_u8
+	         $05e1 = UpdateOnVblank.check_rm_topping_u9
+	         $05f1 = UpdateOnVblank.no_topping_u9
+	         $061b = UpdateOnVblank.check_rm_topping_u10
+	         $062b = UpdateOnVblank.no_topping_u10
+	         $062b = UpdateOnVblank.fireplace_u11
+	         $0666 = UpdateOnVblank.rm_fireplace_u11
+	         $0696 = UpdateOnVblank.pepperoni_u11
+	         $06ab = UpdateOnVblank.rm_pepperoni_u11
+	         $06b5 = UpdateOnVblank.mushroom_u11
+	         $06ca = UpdateOnVblank.rm_mushroom_u11
+	         $06d4 = UpdateOnVblank.onion_u11
+	         $06e9 = UpdateOnVblank.rm_onion_u11
+	         $06f3 = UpdateOnVblank.sardine_u11
+	         $0708 = UpdateOnVblank.rm_sardine_u11
+	         $0712 = UpdateOnVblank.done_u11
+	         $074c = UpdateOnVblank.loop_exit_sprite_u13
+	         $077b = UpdateOnVblank.skip_reset_u14
+	         $0782 = UpdateOnVblank.check_first_u15
+	         $078f = UpdateOnVblank.check_second_u15
+	         $079c = UpdateOnVblank.check_third_u15
+	         $07a9 = UpdateOnVblank.check_fourth_u15
+	         $07b3 = UpdateOnVblank.done_appearance_u15
+	         $07cb = UpdateOnVblank.loop_enter_sprite_u16
+	         $07ed = UpdateOnVblank.temp_pepperoni_u17
+	         $0800 = UpdateOnVblank.temp_no_pepperoni_u17
+	         $080a = UpdateOnVblank.temp_mushroom_u17
+	         $081d = UpdateOnVblank.temp_no_mushroom_u17
+	         $0827 = UpdateOnVblank.temp_onion_u17
+	         $083a = UpdateOnVblank.temp_no_onion_u17
+	         $0844 = UpdateOnVblank.temp_sardine_u17
+	         $0857 = UpdateOnVblank.temp_no_sardine_u17
+	         $0861 = UpdateOnVblank.continue_u12
+	         $0861 = UpdateOnVblank.temp_done_u17
+	         $0880 = UpdateOnVblank.multiply_u18
+	         $08ab = UpdateOnVblank.check_right_u18
+	         $08d8 = UpdateOnVblank.collisions_over_u18
+	         $08f9 = UpdateOnVblank.handle_timer_end
+	         $0915 = UpdateOnVblank.init_round_1
+	         $0920 = UpdateOnVblank.init_round_2
+	         $092b = UpdateOnVblank.init_round_final
+	         $093b = UpdateOnVblank.skip_decrement
+	         $093b = UpdateOnVblank.over
+	         $093c = UpdateOnVblank.end
+	SECTION: $093d-$0a42 ($0106 bytes) ["graphics"]
+	         $093d = STRING_YOU_MADE
+	         $0946 = STRING_PIZZAS
+	         $094d = STRING_CONGRATS
+	         $095d = STRING_TRY_AGAIN
+	         $0966 = HandleEndGame
+	         $0987 = HandleEndGame.game_won
+	         $099a = HandleEndGame.handling_done
+	         $099b = TimerEnd
+	         $09ac = TimerEnd.load_start_tilemap
+	         $09e0 = TimerEnd.game_over
+	         $09e3 = TimerEnd.over
+	         $09ef = print_text
+	         $09ef = print_text.print_loop
+	         $09ff = print_text.non_letter
+	         $0a22 = print_text.space
+	         $0a27 = print_text.exclamation
+	         $0a2c = print_text.comma
+	         $0a31 = print_text.dash
+	         $0a36 = print_text.period
+	         $0a3b = print_text.question
+	         $0a3d = print_text.update_bc
+	         $0a42 = print_text.done
+	EMPTY: $0a43-$5bff ($51bd bytes)
 	SECTION: $5c00-$7fff ($2400 bytes) ["graphics_data"]
-	TOTAL EMPTY: $52f0 bytes
+	TOTAL EMPTY: $525a bytes
