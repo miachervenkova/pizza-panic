@@ -22,6 +22,7 @@ def MUSHROOM_BIT            equ (1)
 def ONION_BIT               equ (2)
 def SARDINE_BIT             equ (3)
 def SAUCE_BIT               equ (4)
+
 ; storage method for level info:
 ;   bit 0 –> pepperoni topping
 ;   bit 1 –> mushroom topping
@@ -49,7 +50,7 @@ def LEVEL_13            rb 1
 def LEVEL_14            rb 1
 def LEVEL_15            rb 1
 def LEVEL_16            rb 1
-def LEVELS_COMPLETED    rb 1
+def LEVELS_COMPLETED    rb 1 ; counter of # of levels completed
 
 def ORDER_1             equ (%00010000)
 def ORDER_2             equ (%00010001)
@@ -79,11 +80,10 @@ def SPRITE_MAX_RIGHT        equ (168)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; customer tile positions
-
-def CUSTOMER_1_TILE_ADDRESS equ (0)
-def CUSTOMER_2_TILE_ADDRESS equ (16)
-def CUSTOMER_3_TILE_ADDRESS equ (18)
-def CUSTOMER_4_TILE_ADDRESS equ (20)
+def CUSTOMER_1_TILE_ADDRESS equ (42)
+def CUSTOMER_2_TILE_ADDRESS equ (10)
+def CUSTOMER_3_TILE_ADDRESS equ (16)
+def CUSTOMER_4_TILE_ADDRESS equ (22)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -130,6 +130,7 @@ macro InitGameOrders
     ld [LEVELS_COMPLETED], a
 endm
 
+; sets initial positions and oam info for customer sprites, as well as template pizza
 macro InitCustomerSprites
     rsset (_OAMRAM + (NUM_CHEF_SPRITES * sizeof_OAM_ATTRS))
     def CUSTOMER_SPRITE_ADDRESS             rl 1
@@ -164,41 +165,92 @@ macro InitCustomerSprites
     copy [CUSTOMER_SARDINE_SPRITE_ADDRESS + OAMA_FLAGS], OAMF_PAL0
 
     UpdateTemplatePizza
-
 endm
 
+; sends a customer to the counter
 macro SendCustomer
+
+    UpdateCustomerAppearance
+
+    ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
+    add a, BACK_SPRITE_OFFSET
+    ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
+
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_Y], SPRITE_MAX_BOTTOM
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_X], COUNTER_X_POS
 
     ld a, COUNTER_Y_POS
     ld b, a
     ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_Y]
-    .loop_enter_sprite
+    .loop_enter_sprite\@
         halt
         halt
         dec a
         copy [CUSTOMER_SPRITE_ADDRESS + OAMA_Y], a
         cp a, b
-        jp nz, .loop_enter_sprite
+        jp nz, .loop_enter_sprite\@
+
+    ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
+    sub a, BACK_SPRITE_OFFSET
+    ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
 endm
 
+; makes the customer exit the pizza shop
 macro DepartCustomer
+
+    ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
+    add a, RIGHT_SPRITE_OFFSET
+    ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
+
     ld a, SPRITE_MAX_RIGHT
     ld b, a
     ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_X]
-    .loop_exit_sprite
+    .loop_exit_sprite\@
         halt
         halt
         inc a
         copy [CUSTOMER_SPRITE_ADDRESS + OAMA_X], a
         cp a, b
-        jp nz, .loop_exit_sprite
+        jp nz, .loop_exit_sprite\@
 
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_Y], 0
     copy [CUSTOMER_SPRITE_ADDRESS + OAMA_X], 0
+
+    ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
+    sub a, RIGHT_SPRITE_OFFSET
+    ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
 endm
 
+; changes the tileid of the sprite between orders, so customers cycle through
+macro UpdateCustomerAppearance
+   ld a, [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID]
+   .check_first\@
+       cp a, CUSTOMER_1_TILE_ADDRESS
+       jp nz, .check_second\@
+       ld a, CUSTOMER_2_TILE_ADDRESS
+       ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
+       jp .done_appearance\@
+   .check_second\@
+       cp a, CUSTOMER_2_TILE_ADDRESS
+       jp nz, .check_third\@
+       ld a, CUSTOMER_3_TILE_ADDRESS
+       ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
+       jp .done_appearance\@
+   .check_third\@
+       cp a, CUSTOMER_3_TILE_ADDRESS
+       jp nz, .check_fourth\@
+       ld a, CUSTOMER_4_TILE_ADDRESS
+       ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
+       jp .done_appearance\@
+   .check_fourth\@
+       cp a, CUSTOMER_4_TILE_ADDRESS
+       jp nz, .done_appearance\@
+       ld a, CUSTOMER_1_TILE_ADDRESS
+       ld [CUSTOMER_SPRITE_ADDRESS + OAMA_TILEID], a
+   .done_appearance\@
+endm
+
+; updates template pizza between orders
 macro UpdateTemplatePizza
     ld hl, ORDER_NUMBER
     ld a, [ORDER_NUMBER]
@@ -206,53 +258,54 @@ macro UpdateTemplatePizza
     ld b, 0
     add hl, bc
 
-    .temp_pepperoni
+    .temp_pepperoni\@
         ld a, [hl]
         bit PEPPERONI_BIT, a
-        jp z, .temp_no_pepperoni
+        jp z, .temp_no_pepperoni\@
         copy [CUSTOMER_PEPPERONI_SPRITE_ADDRESS + OAMA_Y], TEMPLATE_LEFT_Y_POS
         copy [CUSTOMER_PEPPERONI_SPRITE_ADDRESS + OAMA_X], TEMPLATE_LEFT_X_POS
-        jp .temp_mushroom
-    .temp_no_pepperoni
+        jp .temp_mushroom\@
+    .temp_no_pepperoni\@
         copy [CUSTOMER_PEPPERONI_SPRITE_ADDRESS + OAMA_Y], 0
         copy [CUSTOMER_PEPPERONI_SPRITE_ADDRESS + OAMA_X], 0
 
-    .temp_mushroom
+    .temp_mushroom\@
         ld a, [hl]
         bit MUSHROOM_BIT, a
-        jp z, .temp_no_mushroom
+        jp z, .temp_no_mushroom\@
         copy [CUSTOMER_MUSHROOM_SPRITE_ADDRESS + OAMA_Y], TEMPLATE_LEFT_Y_POS
         copy [CUSTOMER_MUSHROOM_SPRITE_ADDRESS + OAMA_X], TEMPLATE_LEFT_X_POS
-        jp .temp_onion
-    .temp_no_mushroom
+        jp .temp_onion\@
+    .temp_no_mushroom\@
         copy [CUSTOMER_MUSHROOM_SPRITE_ADDRESS + OAMA_Y], 0
         copy [CUSTOMER_MUSHROOM_SPRITE_ADDRESS + OAMA_X], 0
 
-    .temp_onion
+    .temp_onion\@
         ld a, [hl]
         bit ONION_BIT, a
-        jp z, .temp_no_onion
+        jp z, .temp_no_onion\@
         copy [CUSTOMER_ONION_SPRITE_ADDRESS + OAMA_Y], TEMPLATE_RIGHT_Y_POS
         copy [CUSTOMER_ONION_SPRITE_ADDRESS + OAMA_X], TEMPLATE_RIGHT_X_POS
-        jp .temp_sardine
-    .temp_no_onion
+        jp .temp_sardine\@
+    .temp_no_onion\@
         copy [CUSTOMER_ONION_SPRITE_ADDRESS + OAMA_Y], 0
         copy [CUSTOMER_ONION_SPRITE_ADDRESS + OAMA_X], 0
 
-    .temp_sardine    
+    .temp_sardine\@ 
         ld a, [hl]
         bit SARDINE_BIT, a
-        jp z, .temp_no_sardine
+        jp z, .temp_no_sardine\@
         copy [CUSTOMER_SARDINE_SPRITE_ADDRESS + OAMA_Y], TEMPLATE_RIGHT_Y_POS
         copy [CUSTOMER_SARDINE_SPRITE_ADDRESS + OAMA_X], TEMPLATE_RIGHT_X_POS
-        jp .temp_done
-    .temp_no_sardine
+        jp .temp_done\@
+    .temp_no_sardine\@
         copy [CUSTOMER_SARDINE_SPRITE_ADDRESS + OAMA_Y], 0
         copy [CUSTOMER_SARDINE_SPRITE_ADDRESS + OAMA_X], 0
 
-    .temp_done
+    .temp_done\@
 endm
 
+; compares template pizza  with current order status to see if the pizza is done
 macro CheckOrderDone
     ld a, [CURRENT_ORDER_INFO]
     ld d, a
@@ -264,20 +317,21 @@ macro CheckOrderDone
     ld a, [hl]
     
     cp a, d
-    jp nz, .continue
+    jp nz, .continue\@
 
     PlayCoinSound
     DepartCustomer
     StartNextOrder
 
-    .continue
+    .continue\@
 endm
 
+; updates game info related to the specific order
 macro StartNextOrder
     ld a, [ORDER_NUMBER]
     ld b, a
     cp a, FINAL_ORDER
-    jp nz, .skip_reset
+    jp nz, .skip_reset\@
 
     ld a, [LEVELS_COMPLETED]
     add a, b
@@ -285,7 +339,7 @@ macro StartNextOrder
 
     ld a, 0
     
-    .skip_reset
+    .skip_reset\@
         inc a
         ld [ORDER_NUMBER], a
 
@@ -296,11 +350,6 @@ macro StartNextOrder
 
     UpdateTemplatePizza
 endm
-
-macro UpdateGameState
-    CheckOrderDone
-endm
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

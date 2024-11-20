@@ -1,3 +1,8 @@
+; Project 6
+; @file collisions.inc
+; @author Mia Chervenkova and Charlie Beard
+; @date Nov 17 2024
+
 if !def(COLLISION_INC)
 def COLLISION_RGBINC equ 1
 
@@ -24,6 +29,8 @@ def BACKGROUND_ROW_SIZE equ ($20)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; checks if a sprite is in an illegal (not safe) tile
+; moves chef to its previous location if above is true
 macro UpdateCollisionStatus
     ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
     sub a, SPRITE_X_OFFSET
@@ -31,7 +38,7 @@ macro UpdateCollisionStatus
     srl a
     srl a
     ld e, a
-    ld d, 0 ; de is the column
+    ld d, 0 ; de is the column of the current tile
 
     ld a, [CHEF_SPRITE_ADDRESS + OAMA_Y]
     srl a
@@ -44,10 +51,10 @@ macro UpdateCollisionStatus
     ld b, 0
     ld c, BACKGROUND_ROW_SIZE
     
-    .multiply
+    .multiply\@
         add hl, bc
         dec a
-        jp nz, .multiply
+        jp nz, .multiply\@
 
     ld b, h
     ld c, l
@@ -63,13 +70,13 @@ macro UpdateCollisionStatus
     ld a, [hl]
 
     cp a, SAFE_TILE_1
-    jp z, .check_right
+    jp z, .check_right\@
 
     cp a, SAFE_TILE_2
-    jp z, .check_right
+    jp z, .check_right\@
 
     cp a, SAFE_TILE_3
-    jp z, .check_right    
+    jp z, .check_right\@  
 
     ; reset movememnt if in an illegal tile
     ld a, [CHEF_PREV_X]
@@ -77,15 +84,15 @@ macro UpdateCollisionStatus
     ld a, [CHEF_PREV_Y]
     ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
 
-    jp .collisions_over
+    jp .collisions_over\@
 
-    .check_right
+    .check_right\@
         ld a, [CHEF_SPRITE_ADDRESS + OAMA_X]
         srl a
         srl a
         srl a
         ld e, a
-        ld d, 0 ; de is the column
+        ld d, 0 ; de is the column again, but of the right side of the sprite
 
         ld hl, BACKGROUND_VRAM_ORIGIN
         add hl, de
@@ -95,13 +102,13 @@ macro UpdateCollisionStatus
         ld a, [hl]
 
         cp a, SAFE_TILE_1
-        jp z, .collisions_over
+        jp z, .collisions_over\@
 
         cp a, SAFE_TILE_2
-        jp z, .collisions_over
+        jp z, .collisions_over\@
 
         cp a, SAFE_TILE_3
-        jp z, .collisions_over    
+        jp z, .collisions_over\@  
 
         ; reset movememnt if in an illegal tile
         ld a, [CHEF_PREV_X]
@@ -109,7 +116,7 @@ macro UpdateCollisionStatus
         ld a, [CHEF_PREV_Y]
         ld [CHEF_SPRITE_ADDRESS + OAMA_Y], a
 
-    .collisions_over
+    .collisions_over\@
          
 endm
 
