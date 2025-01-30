@@ -1,10 +1,10 @@
-# Your Game
+# Pizza Panic
 
-CODE YOU WRITE FOR THIS ASSIGNMENT MAY NOT BE POSTED PUBLICLY. 
+- the goal of the game is to make as many pizzas as possible. First, you need to find all the toppings in the kitchen.
 
 
-// Oct 30
-The main character sprite moves, and we created a third timemap for the start screen.
-
-// Oct 28
-We drew more tiles in our tileset to accomodate for the window. Our idea is that ingredients to the pizza will be sprites added on top of each other. 
+INSTRUCTIONS:
+- you need a GameBoy emulator to play the game. We used Emulicious for development.
+- use the d-pad to move. The START button (Return) starts the round. Use the A button (S) to add a topping and the B button (A) to remove a topping.
+- the game consists of three rounds: the first one - 60 seconds, the second one - 40 seconds, and the third one - 14 seconds. 
+- The last round is the shortest, and you must attempt to make at least four pizzas. 
